@@ -1,0 +1,4 @@
+(library
+ (name othello)
+ (public_name Othello)
+ (libraries str))
