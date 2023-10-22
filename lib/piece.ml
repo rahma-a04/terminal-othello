@@ -9,11 +9,11 @@ module Positions_map : Map.S with type key = int * int = Map.Make (struct
     if x1 > x2 then 1 else if x1 < x2 then -1 else 0
 end)
 
-type piece = Black | White
+type piece =
+  | Black
+  | White
 
-(*module Position = struct
-    type t = int * int
-  end*)
+(*module Position = struct type t = int * int end*)
 (* 8 functions to output piece option lists of the *)
 module LegitMove = struct
   let rec northeast curr_x curr_y =
@@ -68,7 +68,9 @@ module LegitMove = struct
 
   let is_legit board curr_x curr_y piece =
     let f n =
-      (match piece with Black -> can_black_play | White -> can_white_play)
+      (match piece with
+      | Black -> can_black_play
+      | White -> can_white_play)
         (List.map (fun (x, y) -> Positions_map.find_opt (x, y) board) n)
     in
     f (northeast (curr_x + 1) (curr_y + 1))
