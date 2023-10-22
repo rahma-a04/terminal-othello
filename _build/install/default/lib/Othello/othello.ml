@@ -1,0 +1,1 @@
+../../../../default/lib/othello.ml-gen
