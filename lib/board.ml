@@ -78,7 +78,7 @@ let get_element row col board =
   try
     let selected_row = List.nth board row in
     List.nth selected_row col
-  with Failure "Bad location" -> failwith "Invalid row or column index"
+  with Failure _ -> failwith "Invalid row or column index"
 
 let valid_move row col board =
   if row > 7 || col > 7 then false
