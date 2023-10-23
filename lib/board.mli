@@ -3,6 +3,9 @@ type piece =
   | White
   | Empty
 
+val empty_board : piece list list
+(** The empty Othello board. *)
+
 val print_board : piece list list -> unit
 (** Prints the current board in utop, takes in a board. *)
 
