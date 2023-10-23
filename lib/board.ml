@@ -72,7 +72,7 @@ let rec count_pieces (board : piece list list) (color : piece) =
   | h :: t -> count_number_of_objs_in_list h color + count_pieces t color
 
 let is_board_filled (board : piece list list) =
-  if count_pieces board Empty < 64 then false else true
+  if count_pieces board Empty > 0 then false else true
 
 let get_element row col board =
   try
