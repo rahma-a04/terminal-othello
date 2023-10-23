@@ -1,0 +1,30 @@
+---
+# Members of your group.
+group:
+  - name: Rahma Abdullah
+    netid: ra567
+  - name: Mary Yuan
+    netid: cy452
+  - name: Arthi Vijayakumar
+    netid: av439
+  - name: Om Deshmukh
+    netid: od66
+# Your PM.
+pm:
+  name: Yousef Abouamer
+  netid: ya99
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+# Pithy title
+title: "Othello!"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: https://github.coecis.cornell.edu/ra567/cs3110-final-project
+# If you have no demo screencast, replace the url string with an empty string ""
+demo-video-url: ""
+# Write a short, attention-grabbing description of your project.
+desc: >
+  Our project is a single-computer multiplayer version of the game Othello.
+  Players can input moves and try to strategically place their pieces so that
+  they finish the game with the most pieces on the board.
+  
+  The program currently supports basic terminal I/O, but a GUI is in the works!
