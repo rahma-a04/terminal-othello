@@ -1,0 +1,19 @@
+Instructions to build system and play game: 
+
+1. Run dune build in the folder's directory in terminal 
+
+2. Type command "make othello" to start the othello game
+
+3. Type 'y' or 'n' (per the prompts) to start or stop the game. 
+
+4. If the game has started, you may place a piece on the board. 
+The board is printed as a grid. The 0's in the grid are empty spaces,
+while the black pieces are represented with 1 and the white pieces are represented with 2. 
+
+To start the game, you have to enter two numbers representing the row and column of the spot 
+on the board. For example '2 3' will place a piece at the spot row 2 and column 3.
+The range of values for row is 0 <= row <= 7 and column is 0 <= column <= 7. 
+
+5. Type 'q' at any point to quit the game. 
+
+6. When finished, run dune clean in terminal 
