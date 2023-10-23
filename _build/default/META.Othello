@@ -1,6 +1,0 @@
-description = ""
-requires = "str"
-archive(byte) = "othello.cma"
-archive(native) = "othello.cmxa"
-plugin(byte) = "othello.cma"
-plugin(native) = "othello.cmxs"
