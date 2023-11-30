@@ -17,7 +17,7 @@ val is_board_filled : piece list list -> bool
 (** Checks whether all spaces in a board is taken up by a piece. Takes in a
     board and returns a boolean. *)
 
-val to_list : piece list list -> int list list
+val to_list : piece list list -> string list list
 (** Converts a board of pieces to a board of numbers with Empty corresponding
     with 0, Black corresponding with 1, and White corresponding with 2. *)
 

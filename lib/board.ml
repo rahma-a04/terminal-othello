@@ -1,6 +1,9 @@
 (** creates the board of othello, and provide a function that prints it out in
     terminal. *)
 
+open Piece
+open Position
+
 type piece =
   | Black
   | White
@@ -11,8 +14,8 @@ let empty_board =
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-    [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-    [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+    [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+    [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
@@ -22,9 +25,9 @@ let rec to_list_small lst =
   match lst with
   | [] -> []
   | h :: t ->
-      if h = Empty then 0 :: to_list_small t
-      else if h = Black then 1 :: to_list_small t
-      else 2 :: to_list_small t
+      if h = Empty then "Empty" :: to_list_small t
+      else if h = Black then "Black" :: to_list_small t
+      else "White" :: to_list_small t
 
 let rec to_list board =
   match board with
@@ -34,11 +37,11 @@ let rec to_list board =
 let rec print_list = function
   | [] -> ()
   | h :: t ->
-      print_int h;
+      print_string h;
       print_string " | ";
       print_list t
 
-let board_row (lst : int list) : unit =
+let board_row (lst : string list) : unit =
   print_string "| ";
   print_list lst
 
@@ -47,12 +50,12 @@ let rec print_list_of_lists = function
   | h :: t ->
       board_row h;
       print_newline ();
-      print_string "---------------------------------";
+      print_string "------------------------------------------------------------------";
       print_newline ();
       print_list_of_lists t
 
-let print_board_top (lst : int list list) : unit =
-  print_string "---------------------------------";
+let print_board_top (lst : string list list) : unit =
+  print_string "------------------------------------------------------------------";
   print_newline ();
   print_list_of_lists lst
 
