@@ -6,6 +6,9 @@ type piece =
 val empty_board : piece list list
 (** The empty Othello board. *)
 
+val to_list_small : piece list -> string list
+(** Converts a piece list to a string list. *)
+
 val print_board : piece list list -> unit
 (** Prints the current board in utop, takes in a board. *)
 
@@ -19,7 +22,8 @@ val is_board_filled : piece list list -> bool
 
 val to_list : piece list list -> string list list
 (** Converts a board of pieces to a board of numbers with Empty corresponding
-    with 0, Black corresponding with 1, and White corresponding with 2. *)
+    with "Empty", Black corresponding with "Black", and White corresponding with
+    "White". *)
 
 val valid_move : int -> int -> piece list list -> bool
 (** Checks whether the location has a piece on it already and whether it is out

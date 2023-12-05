@@ -1,6 +1,7 @@
+open Piece
 (** creates the board of Othello, and provide a function that prints it out in
     terminal. *)
-open Piece
+
 open Position
 
 type piece =
@@ -49,12 +50,14 @@ let rec print_list_of_lists = function
   | h :: t ->
       board_row h;
       print_newline ();
-      print_string "------------------------------------------------------------------";
+      print_string
+        "------------------------------------------------------------------";
       print_newline ();
       print_list_of_lists t
 
 let print_board_top (lst : string list list) : unit =
-  print_string "------------------------------------------------------------------";
+  print_string
+    "------------------------------------------------------------------";
   print_newline ();
   print_list_of_lists lst
 
@@ -159,7 +162,8 @@ module LegitMove = struct
     | White :: tail -> can_black_play_helper tail
 
   let can_black_play board =
-    can_black_play_helper (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+    can_black_play_helper
+      (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
 
   let rec can_white_play_helper = function
     | [] -> false
@@ -167,11 +171,15 @@ module LegitMove = struct
     | Black :: tail -> can_white_play_helper tail
 
   let can_white_play board =
-    can_white_play_helper (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+    can_white_play_helper
+      (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
 
   let is_legit board curr_x curr_y piece =
     let f n =
-      (match piece with Black -> can_black_play | White -> can_white_play) n
+      (match piece with
+      | Black -> can_black_play
+      | White -> can_white_play)
+        n
     in
     f (northeast (curr_x + 1) (curr_y + 1) board)
     || f (east (curr_x + 1) curr_y board)
@@ -183,5 +191,4 @@ module LegitMove = struct
     || f (north curr_x (curr_y + 1) board)
 end
 
-let valid_move row col color board =
-  LegitMove.is_legit board row col color
+let valid_move row col color board = LegitMove.is_legit board row col color
