@@ -95,3 +95,93 @@ let rec update_element row col value board =
     board
 
 let place_piece x y (color : piece) board = update_element x y color board
+
+module LegitMove = struct
+  let rec northeast curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: northeast (curr_x + 1) (curr_y + 1) board
+
+  let rec east curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: east (curr_x + 1) curr_y board
+
+  let rec southeast curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: southeast (curr_x + 1) (curr_y - 1) board
+
+  let rec south curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: south curr_x (curr_y - 1) board
+
+  let rec southwest curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: southwest (curr_x - 1) (curr_y - 1) board
+
+  let rec west curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: west (curr_x - 1) curr_y board
+
+  let rec northwwest curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: northwwest (curr_x - 1) (curr_y + 1) board
+
+  let rec north curr_x curr_y board =
+    if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
+    else
+      match get_element curr_x curr_y board with
+      | Empty -> []
+      | _ -> (curr_x, curr_y) :: north curr_x (curr_y + 1) board
+
+  let rec can_black_play_helper = function
+    | [] -> false
+    | Black :: _ -> true
+    | White :: tail -> can_black_play_helper tail
+
+  let can_black_play board =
+    can_black_play_helper (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+
+  let rec can_white_play_helper = function
+    | [] -> false
+    | White :: _ -> true
+    | Black :: tail -> can_white_play_helper tail
+
+  let can_white_play board =
+    can_white_play_helper (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+
+  let is_legit board curr_x curr_y piece =
+    let f n =
+      (match piece with Black -> can_black_play | White -> can_white_play) n
+    in
+    f (northeast (curr_x + 1) (curr_y + 1) board)
+    || f (east (curr_x + 1) curr_y board)
+    || f (southeast (curr_x + 1) (curr_y - 1) board)
+    || f (south curr_x (curr_y - 1) board)
+    || f (southwest (curr_x - 1) (curr_y - 1) board)
+    || f (west (curr_x - 1) curr_y board)
+    || f (northwwest (curr_x - 1) (curr_y + 1) board)
+    || f (north curr_x (curr_y + 1) board)
+end
+
+let valid_move row col color board =
+  LegitMove.is_legit board row col color
