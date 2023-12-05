@@ -1,6 +1,5 @@
-(** creates the board of othello, and provide a function that prints it out in
+(** creates the board of Othello, and provide a function that prints it out in
     terminal. *)
-
 open Piece
 open Position
 
