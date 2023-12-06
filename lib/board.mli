@@ -12,6 +12,9 @@ val to_list_small : piece list -> string list
 val print_board : piece list list -> unit
 (** Prints the current board in utop, takes in a board. *)
 
+val count_number_of_objs_in_list : piece list -> piece -> int
+(** Counts the number of specific pieces in a list. *)
+
 val count_pieces : piece list list -> piece -> int
 (** Count the number of specific colored pieces in board, takes in a board and a
     color and returns an integer. *)

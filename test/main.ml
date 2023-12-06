@@ -101,6 +101,258 @@ let board_tests =
         ]
         (Board.to_list
            [ [ Black; Black; Black; Black; Black; Black; Black; Black ] ]) );
+    ( "single row (multiple different colors)" >:: fun _ ->
+      assert_equal
+        [
+          [
+            "Black";
+            "White";
+            "Empty";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+          ];
+        ]
+        (Board.to_list
+           [ [ Black; White; Empty; Black; Black; Black; Black; Black ] ]) );
+    ( "two rows (Empty)" >:: fun _ ->
+      assert_equal
+        [
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+        ]
+        (Board.to_list
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]) );
+    ( "two rows (Black)" >:: fun _ ->
+      assert_equal
+        [
+          [
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+          ];
+          [
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+            "Black";
+          ];
+        ]
+        (Board.to_list
+           [
+             [ Black; Black; Black; Black; Black; Black; Black; Black ];
+             [ Black; Black; Black; Black; Black; Black; Black; Black ];
+           ]) );
+    ( "two rows (White)" >:: fun _ ->
+      assert_equal
+        [
+          [
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+          ];
+          [
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+            "White";
+          ];
+        ]
+        (Board.to_list
+           [
+             [ White; White; White; White; White; White; White; White ];
+             [ White; White; White; White; White; White; White; White ];
+           ]) );
+    ( "starting position" >:: fun _ ->
+      assert_equal
+        [
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Black";
+            "White";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "White";
+            "Black";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+          [
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+            "Empty";
+          ];
+        ]
+        (Board.to_list Board.empty_board) );
+    (* count_number_of_objs_in_list tests *)
+    ( "Empty list" >:: fun _ ->
+      assert_equal 0 (Board.count_number_of_objs_in_list [] Empty) );
+    ( "Empty piece list" >:: fun _ ->
+      assert_equal 8
+        (Board.count_number_of_objs_in_list
+           [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ]
+           Empty) );
+    ( "Black piece list" >:: fun _ ->
+      assert_equal 8
+        (Board.count_number_of_objs_in_list
+           [ Black; Black; Black; Black; Black; Black; Black; Black ]
+           Black) );
+    ( "White piece list" >:: fun _ ->
+      assert_equal 8
+        (Board.count_number_of_objs_in_list
+           [ White; White; White; White; White; White; White; White ]
+           White) );
+    ( "Empty piece list" >:: fun _ ->
+      assert_equal 0
+        (Board.count_number_of_objs_in_list
+           [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ]
+           Black) );
+    ( "Varied piece list" >:: fun _ ->
+      assert_equal 0
+        (Board.count_number_of_objs_in_list
+           [ Empty; Empty; White; Empty; White; Empty; Empty; Empty ]
+           Black) );
+    ( "Another varied piece list" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ Empty; Black; Empty; Empty; Empty; White; Empty; Empty ]
+           Black) );
+    ( "Edge case: head for Black" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ Black; Empty; Empty; Empty; Empty; Empty; Empty; Empty ]
+           Black) );
+    ( "Edge case : tail for Black" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Black ]
+           Black) );
+    ( "Edge case: head for White" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ White; Empty; Empty; Empty; Empty; Empty; Empty; Empty ]
+           White) );
+    ( "Edge case : tail for White" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; White ]
+           White) );
+    ( "Edge case: head for Empty" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ Empty; White; White; White; White; White; White; White ]
+           Empty) );
+    ( "Edge case : tail for Empty" >:: fun _ ->
+      assert_equal 1
+        (Board.count_number_of_objs_in_list
+           [ White; White; White; White; White; White; White; Empty ]
+           Empty) );
+    (* Count pieces tests *)
   ]
 
 let suite = "test suite for Othello" >::: List.flatten [ board_tests ]

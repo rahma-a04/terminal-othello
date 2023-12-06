@@ -2,5 +2,5 @@
 othello:
 	OCAMLRUNPARAM=b dune exec bin/main.exe
 
-test:
+tests:
 	OCAMLRUNPARAM=b dune exec test/main.exe

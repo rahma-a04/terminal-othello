@@ -187,4 +187,4 @@ module LegitMove = struct
     || f northwwest || f north
 end
 
-let valid_move row col color board = LegitMove.is_legit board row col color
+let valid_move_new row col color board = LegitMove.is_legit board row col color
