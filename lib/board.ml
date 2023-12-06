@@ -157,38 +157,34 @@ module LegitMove = struct
       | _ -> (curr_x, curr_y) :: north curr_x (curr_y + 1) board
 
   let rec can_black_play_helper = function
-    | [] -> false
     | Black :: _ -> true
     | White :: tail -> can_black_play_helper tail
+    | _ -> false
 
-  let can_black_play board =
-    can_black_play_helper
-      (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+  let can_black_play board positions =
+    let pieces = List.map (fun (x, y) -> get_element x y board) positions in
+    can_black_play_helper pieces
 
   let rec can_white_play_helper = function
-    | [] -> false
     | White :: _ -> true
     | Black :: tail -> can_white_play_helper tail
+    | _ -> false
 
-  let can_white_play board =
-    can_white_play_helper
-      (List.map (fun (x, y) -> get_element x y board) (northeast 1 1 board))
+  let can_white_play board positions =
+    let pieces = List.map (fun (x, y) -> get_element x y board) positions in
+    can_white_play_helper pieces
 
   let is_legit board curr_x curr_y piece =
-    let f n =
+    let f dir_func =
       (match piece with
       | Black -> can_black_play
-      | White -> can_white_play)
-        n
+      | White -> can_white_play
+      | _ -> failwith "color required")
+        board
+        (dir_func (curr_x + 1) (curr_y + 1) board)
     in
-    f (northeast (curr_x + 1) (curr_y + 1) board)
-    || f (east (curr_x + 1) curr_y board)
-    || f (southeast (curr_x + 1) (curr_y - 1) board)
-    || f (south curr_x (curr_y - 1) board)
-    || f (southwest (curr_x - 1) (curr_y - 1) board)
-    || f (west (curr_x - 1) curr_y board)
-    || f (northwwest (curr_x - 1) (curr_y + 1) board)
-    || f (north curr_x (curr_y + 1) board)
+    f northeast || f east || f southeast || f south || f southwest || f west
+    || f northwwest || f north
 end
 
 let valid_move row col color board = LegitMove.is_legit board row col color
