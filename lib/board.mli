@@ -38,6 +38,9 @@ val get_element : int -> int -> piece list list -> piece
 val place_piece : int -> int -> piece -> piece list list -> piece list list
 (** Places the piece in the desired location (x, y). *)
 
+val is_legit : piece list list -> int -> int -> piece -> bool
+(** Checks to see if move is legal based on rules of othello*)
+
 val find_all_valid_moves : piece -> piece list list -> (int * int) list
 (** Finds all valid moves for a given piece on the board. *)
 
