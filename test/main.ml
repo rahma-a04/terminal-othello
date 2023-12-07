@@ -353,6 +353,141 @@ let board_tests =
            [ White; White; White; White; White; White; White; Empty ]
            Empty) );
     (* Count pieces tests *)
+    ("Empty list" >:: fun _ -> assert_equal 0 (Board.count_pieces [] Empty));
+    ( "Empty board" >:: fun _ ->
+      assert_equal 64
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           Empty) );
+    ( "Empty board, different piece" >:: fun _ ->
+      assert_equal 0
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           Black) );
+    ( "Empty board, different piece, again" >:: fun _ ->
+      assert_equal 0
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           White) );
+    ( "One row" >:: fun _ ->
+      assert_equal 8
+        (Board.count_pieces
+           [ [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ] ]
+           Empty) );
+    ( "More than one row" >:: fun _ ->
+      assert_equal 16
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           Empty) );
+    ( "full starting position: empty" >:: fun _ ->
+      assert_equal 60
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           Empty) );
+    ( "full starting position: black" >:: fun _ ->
+      assert_equal 2
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           Black) );
+    ( "full starting position: white" >:: fun _ ->
+      assert_equal 2
+        (Board.count_pieces
+           [
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+           ]
+           White) );
+    ( "Edge case: Black" >:: fun _ ->
+      assert_equal 4
+        (Board.count_pieces
+           [
+             [ Black; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Black ];
+           ]
+           Black) );
+    ( "Edge case: white" >:: fun _ ->
+      assert_equal 4
+        (Board.count_pieces
+           [
+             [ White; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
+             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; White ];
+           ]
+           White) );
+    (* is_board_filled tests *)
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
+    ("empty board" >:: fun _ -> assert_bool "failed" (Board.is_board_filled []));
   ]
 
 let suite = "test suite for Othello" >::: List.flatten [ board_tests ]
