@@ -28,9 +28,20 @@ val to_list : piece list list -> string list list
     with "Empty", Black corresponding with "Black", and White corresponding with
     "White". *)
 
+val get_element : int -> int -> piece list list -> piece
+(** Retrieves the element at a specified row and column from the board. *)
+
 val valid_move : int -> int -> piece list list -> bool
 (** Checks whether the location has a piece on it already and whether it is out
     of scope of the board. *)
 
 val place_piece : int -> int -> piece -> piece list list -> piece list list
 (** Places the piece in the desired location (x, y). *)
+
+val find_all_valid_moves : piece -> piece list list -> (int * int) list
+(** Finds all valid moves for a given piece on the board. *)
+
+val place_and_flip_pieces :
+  int -> int -> piece -> piece list list -> piece list list
+(** Places a piece on the board, flips the opponent's pieces according to game
+    rules, and returns the updated board. *)
