@@ -10,6 +10,18 @@ let evaluate_move (move : string) board : (int * int) option =
 (*TODO: this impl sucks, figure out a better way*)
 (*TODO: this impl isn't defensive enough; need to catch invalid argument errors*)
 
+let rec possibleMoveHelper board i j : (int * int) list =
+  let moveString = string_of_int i ^ " " ^ string_of_int j in
+  if i <= 7 then
+    match evaluate_move moveString board with
+    | Some r -> r :: possibleMoveHelper board (i + 1) j
+    | None -> possibleMoveHelper board (i + 1) j
+  else []
+
+let rec possibleMoves board i j : (int * int) list =
+  if j <= 7 then possibleMoveHelper board i j @ possibleMoves board i (j + 1)
+  else []
+
 (** Ends the game. Displays the final scores and the winner on the terminal
     window. *)
 let end_game board =
@@ -27,6 +39,22 @@ let end_game board =
 
 (** Main gameplay function. Allows players to input moves and place pieces in
     alternating order until board is filled. *)
+
+let pp_list pp_elt lst =
+  let pp_elts lst =
+    let rec loop n acc = function
+      | [] -> acc
+      | [ h ] -> acc ^ pp_elt h
+      | h1 :: (h2 :: t as t') ->
+          if n = 100 then acc ^ "..." (* stop printing long list *)
+          else loop (n + 1) (acc ^ pp_elt h1 ^ "; ") t'
+    in
+    loop 0 "" lst
+  in
+  "[" ^ pp_elts lst ^ "]"
+
+let pp_int (x, y) = "\"" ^ string_of_int x ^ ", " ^ string_of_int y ^ "\""
+
 let rec play_game board (is_black : bool) =
   Board.print_board board;
   (* check whether game is over *)
@@ -35,10 +63,15 @@ let rec play_game board (is_black : bool) =
     let player, piece =
       if is_black then ("Black", Board.Black) else ("White", Board.White)
     in
+
     (*TODO: this is dumb*)
     print_string
       ("[Player: " ^ player
-     ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n> ");
+     ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
+     ^ "Possible Moves: "
+      ^ pp_list pp_int (possibleMoves board 0 0)
+      ^ "\n>");
+
     let response = String.trim (read_line ()) in
     match response with
     | "q" -> print_endline "goodbye!"
