@@ -85,10 +85,8 @@ let get_element row col board =
     List.nth selected_row col
   with Failure _ -> failwith "Invalid row or column index"
 
-let valid_move row col board =
-  if row > 7 || col > 7 then false
-  else if get_element row col board = Empty then true
-  else false
+(*let valid_move row col board = if row > 7 || col > 7 then false else if
+  get_element row col board = Empty then true else false*)
 
 let rec update_element row col value board =
   List.mapi
