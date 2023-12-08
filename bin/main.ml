@@ -114,17 +114,23 @@ let rec play_ComputerPlayer board (is_black : bool)
     let player, piece =
       if is_black then ("Black", Board.Black) else ("White", Board.White)
     in
+    let computerPlayer, computerPiece =
+      if computerColorisBlack then ("Black", Board.Black)
+      else ("White", Board.White)
+    in
 
-    if player = "Black" then
-      (let moves = Board.find_all_valid_moves piece board in
-       let response = ComputerPlayer.generateMove moves in
-       match response with
-       | row, col ->
-           print_endline "\n\n\n";
-           play_ComputerPlayer
-             (Board.place_and_flip_pieces row col piece board)
-             (not is_black))
-        true
+    if player = computerPlayer then (
+      let moves = Board.find_all_valid_moves computerPiece board in
+      let response = ComputerPlayer.generateMove moves in
+      match response with
+      | row, col ->
+          print_endline "\n\n\n";
+          print_endline
+            ("Interesting move, let me think!  : " ^ string_of_int row ^ ", "
+           ^ string_of_int col);
+          play_ComputerPlayer
+            (Board.place_and_flip_pieces row col computerPiece board)
+            (not is_black) computerColorisBlack)
     else (
       print_string
         ("[Player: " ^ player
@@ -143,10 +149,10 @@ let rec play_ComputerPlayer board (is_black : bool)
               print_endline "\n\n\n";
               play_ComputerPlayer
                 (Board.place_and_flip_pieces row col piece board)
-                (not is_black) true
+                (not is_black) computerColorisBlack
           | None ->
               print_endline "\n\n\n***Invalid move! Try again.***";
-              play_ComputerPlayer board (not is_black) true))
+              play_ComputerPlayer board (not is_black) computerColorisBlack))
 
 let () =
   print_endline
@@ -162,8 +168,8 @@ let () =
         "Would you like to be black or white? Responses (black/white)";
       let next_response = read_line () in
       match next_response with
-      | "black" -> play_ComputerPlayer Board.empty_board true true
-      | "white" -> play_ComputerPlayer Board.empty_board true false
+      | "black" -> play_ComputerPlayer Board.empty_board true false
+      | "white" -> play_ComputerPlayer Board.empty_board false true
       | _ ->
           print_endline "invalid response!";
           play_ComputerPlayer Board.empty_board true true)
