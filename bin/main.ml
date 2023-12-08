@@ -10,19 +10,6 @@ let evaluate_move (move : string) board color : (int * int) option =
 (*TODO: this impl sucks, figure out a better way*)
 (*TODO: this impl isn't defensive enough; need to catch invalid argument errors*)
 
-let rec possibleMoveHelper board i j color : (int * int) list =
-  let moveString = string_of_int i ^ " " ^ string_of_int j in
-  if i <= 7 then
-    match evaluate_move moveString board color with
-    | Some r -> r :: possibleMoveHelper board (i + 1) j color
-    | None -> possibleMoveHelper board (i + 1) j color
-  else []
-
-let rec possibleMoves board i j color : (int * int) list =
-  if j <= 7 then
-    possibleMoveHelper board i j color @ possibleMoves board i (j + 1) color
-  else []
-
 (** Ends the game. Displays the final scores and the winner on the terminal
     window. *)
 let end_game board =
@@ -70,8 +57,37 @@ let rec play_game board (is_black : bool) =
       ("[Player: " ^ player
      ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
      ^ "Possible Moves: "
-      ^ pp_list pp_int
-          (possibleMoves board 0 0 (if is_black then Black else White))
+      ^ pp_list pp_int (Board.find_all_valid_moves piece board)
+      ^ "\n>");
+
+    let response = String.trim (read_line ()) in
+    match response with
+    | "q" -> print_endline "goodbye!"
+    | _ -> (
+        let row_col = evaluate_move response board piece in
+        match row_col with
+        | Some (row, col) ->
+            print_endline "\n\n\n";
+            play_game (Board.place_piece row col piece board) (not is_black)
+        | None ->
+            print_endline "\n\n\n***Invalid move! Try again.***";
+            play_game board is_black)
+
+let rec play_game board (is_black : bool) =
+  Board.print_board board;
+  (* check whether game is over *)
+  if Board.is_board_filled board then end_game board
+  else
+    let player, piece =
+      if is_black then ("Black", Board.Black) else ("White", Board.White)
+    in
+
+    (*TODO: this is dumb*)
+    print_string
+      ("[Player: " ^ player
+     ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
+     ^ "Possible Moves: "
+      ^ pp_list pp_int (Board.find_all_valid_moves piece board)
       ^ "\n>");
 
     let response = String.trim (read_line ()) in
@@ -89,41 +105,71 @@ let rec play_game board (is_black : bool) =
             print_endline "\n\n\n***Invalid move! Try again.***";
             play_game board is_black)
 
+let rec play_ComputerPlayer board (is_black : bool)
+    (computerColorisBlack : bool) =
+  Board.print_board board;
+  (* check whether game is over *)
+  if Board.is_board_filled board then end_game board
+  else
+    let player, piece =
+      if is_black then ("Black", Board.Black) else ("White", Board.White)
+    in
+
+    if player = "Black" then
+      (let moves = Board.find_all_valid_moves piece board in
+       let response = ComputerPlayer.generateMove moves in
+       match response with
+       | row, col ->
+           print_endline "\n\n\n";
+           play_ComputerPlayer
+             (Board.place_and_flip_pieces row col piece board)
+             (not is_black))
+        true
+    else (
+      print_string
+        ("[Player: " ^ player
+       ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
+       ^ "Possible Moves: "
+        ^ pp_list pp_int (Board.find_all_valid_moves piece board)
+        ^ "\n>");
+
+      let response = String.trim (read_line ()) in
+      match response with
+      | "q" -> print_endline "goodbye!"
+      | _ -> (
+          let row_col = evaluate_move response board piece in
+          match row_col with
+          | Some (row, col) ->
+              print_endline "\n\n\n";
+              play_ComputerPlayer
+                (Board.place_and_flip_pieces row col piece board)
+                (not is_black) true
+          | None ->
+              print_endline "\n\n\n***Invalid move! Try again.***";
+              play_ComputerPlayer board (not is_black) true))
+
 let () =
-  print_endline "Welcome to Othello! Start game? (y/n)";
+  print_endline
+    "Welcome to Othello! Would you like to start a computer game or a two \
+     player game? You can type n to exit. Reponses (computer player, two \
+     player,n)";
   print_string "> ";
   let response = read_line () in
   match String.trim response with
-  | "y" ->
+  | "computer player" -> (
+      print_endline "Welcome to Othello!";
+      print_endline
+        "Would you like to be black or white? Responses (black/white)";
+      let next_response = read_line () in
+      match next_response with
+      | "black" -> play_ComputerPlayer Board.empty_board true true
+      | "white" -> play_ComputerPlayer Board.empty_board true false
+      | _ ->
+          print_endline "invalid response!";
+          play_ComputerPlayer Board.empty_board true true)
+  | "two player" ->
       print_endline "Welcome to Othello!";
       play_game Board.empty_board
         true (*note: change it so that it's case-insensitive*)
-  | "n" ->
-      print_endline
-        ("goodbye!"
-       ^ "\n\
-          _______$$$$ \n\
-          _______$$__$ \n\
-          _______$___$$ \n\
-          _______$___$$ \n\
-          _______$$___$$ \n\
-          ________$____$$ \n\
-          ________$$____$$$ \n\
-          _________$$_____$$ \n\
-          _________$$______$$ \n\
-          __________$_______$$ \n\
-          ____$$$$$$$________$$ \n\
-          __$$$_______________$$$$$$ \n\
-          _$$____$$$$____________$$$ \n\
-          _$___$$$__$$$____________$$ \n\
-          _$$________$$$____________$ \n\
-          __$$____$$$$$$____________$ \n\
-          __$$$$$$$____$$___________$ \n\
-          __$$_______$$$$___________$ \n\
-          ___$$$$$$$$$__$$_________$$ \n\
-          ____$________$$$$_____$$$$ \n\
-          ____$$____$$$$$$____$$$$$$ \n\
-          _____$$$$$$____$$__$$ \n\
-          _______$_____$$$_$$$ \n\
-          ________$$$$$$$$$$ ")
+  | "n" -> print_endline ("Goodbye!" ^ "\n" ^ "Come back another time :)")
   | _ -> print_endline "Invalid response"
