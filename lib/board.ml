@@ -9,6 +9,8 @@ type piece =
   | White
   | Empty
 
+type board = piece list list
+
 let empty_board =
   [
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
@@ -28,11 +30,28 @@ let rec to_list_small lst =
       if h = Empty then "Empty" :: to_list_small t
       else if h = Black then "Black" :: to_list_small t
       else "White" :: to_list_small t
-
+      let black_circle_code = "\u{1F535}"
+      let white_circle_code = "\u{26AA}"
+      
+      let rec to_list_small_unicode lst =
+        match lst with
+        | [] -> []
+        | h :: t ->
+            if h = Empty then "  " :: to_list_small_unicode t
+            else if h = Black then black_circle_code :: to_list_small_unicode t
+            else white_circle_code :: to_list_small_unicode t
+            
 let rec to_list board =
   match board with
   | [] -> []
   | h :: t -> to_list_small h :: to_list t
+
+let to_piece_list board = board
+
+let rec to_list_unicode board =
+  match board with
+  | [] -> []
+  | h :: t -> to_list_small_unicode h :: to_list_unicode t
 
 let rec print_list = function
   | [] -> ()
