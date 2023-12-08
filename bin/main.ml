@@ -3,28 +3,24 @@ open Othello
 (** Parses a move input on a given board into tuple form. Requires: [move] must
     be in the form "a b", where a is the row and b is the column of the intended
     move. Returns None if the move is invalid. *)
-let evaluate_move (move : string) board : (int * int) option =
+let evaluate_move (move : string) board color : (int * int) option =
   let row = int_of_string (String.sub move 0 1) in
   let col = int_of_string (String.sub move 2 1) in
-  if
-    true
-    (*Board.is_legit board row col *)
-    (*color*)
-  then Some (row, col)
-  else None
+  if Board.is_legit board row col color then Some (row, col) else None
 (*TODO: this impl sucks, figure out a better way*)
 (*TODO: this impl isn't defensive enough; need to catch invalid argument errors*)
 
-let rec possibleMoveHelper board i j : (int * int) list =
+let rec possibleMoveHelper board i j color : (int * int) list =
   let moveString = string_of_int i ^ " " ^ string_of_int j in
   if i <= 7 then
-    match evaluate_move moveString board with
-    | Some r -> r :: possibleMoveHelper board (i + 1) j
-    | None -> possibleMoveHelper board (i + 1) j
+    match evaluate_move moveString board color with
+    | Some r -> r :: possibleMoveHelper board (i + 1) j color
+    | None -> possibleMoveHelper board (i + 1) j color
   else []
 
-let rec possibleMoves board i j : (int * int) list =
-  if j <= 7 then possibleMoveHelper board i j @ possibleMoves board i (j + 1)
+let rec possibleMoves board i j color : (int * int) list =
+  if j <= 7 then
+    possibleMoveHelper board i j color @ possibleMoves board i (j + 1) color
   else []
 
 (** Ends the game. Displays the final scores and the winner on the terminal
@@ -74,14 +70,17 @@ let rec play_game board (is_black : bool) =
       ("[Player: " ^ player
      ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
      ^ "Possible Moves: "
-      ^ pp_list pp_int (possibleMoves board 0 0)
+      ^ pp_list pp_int
+          (possibleMoves board 0 0 (if is_black then Black else White))
       ^ "\n>");
 
     let response = String.trim (read_line ()) in
     match response with
     | "q" -> print_endline "goodbye!"
     | _ -> (
-        let row_col = evaluate_move response board in
+        let row_col =
+          evaluate_move response board (if is_black then Black else White)
+        in
         match row_col with
         | Some (row, col) ->
             print_endline "\n\n\n";
