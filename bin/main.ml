@@ -6,7 +6,12 @@ open Othello
 let evaluate_move (move : string) board : (int * int) option =
   let row = int_of_string (String.sub move 0 1) in
   let col = int_of_string (String.sub move 2 1) in
-  if Board.is_legit board row col (*color*) then Some (row, col) else None
+  if
+    true
+    (*Board.is_legit board row col *)
+    (*color*)
+  then Some (row, col)
+  else None
 (*TODO: this impl sucks, figure out a better way*)
 (*TODO: this impl isn't defensive enough; need to catch invalid argument errors*)
 

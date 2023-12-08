@@ -1019,6 +1019,17 @@ let board_tests =
           ];
         ]
         (Board.to_list (Board.place_piece 7 7 Black Board.empty_board)) );
+    ( "is_legit true test" >:: fun _ ->
+      let board = Board.empty_board in
+      assert_equal false (Board.is_legit board 2 3 Black) );
+    ( "is_legit false test" >:: fun _ ->
+      let board = Board.empty_board in
+      assert_equal true (Board.is_legit board 3 2 Black) );
+    (*( "find_all_valid_moves test" >:: fun _ -> let board = Board.empty_board
+      in let board = Board.place_piece 3 2 Black board in let board =
+      Board.place_piece 4 5 White board in let expected_moves = [ (3, 3); (5, 4)
+      ] in assert_equal expected_moves (Board.find_all_valid_moves Black board)
+      );*)
   ]
 
 let suite = "test suite for Othello" >::: List.flatten [ board_tests ]

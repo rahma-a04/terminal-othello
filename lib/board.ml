@@ -188,16 +188,26 @@ let can_white_play board positions =
   can_white_play_helper pieces
 
 let is_legit board curr_x curr_y piece =
-  let f dir_func =
-    (match piece with
-    | Black -> can_black_play
-    | White -> can_white_play
-    | _ -> failwith "color required")
-      board
-      (dir_func (curr_x + 1) (curr_y + 1) board)
-  in
-  f northeast || f east || f southeast || f south || f southwest || f west
-  || f northwwest || f north
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> Empty
+  then false
+  else
+    let f n =
+      (match piece with
+      | Black -> can_black_play
+      | White -> can_white_play
+      | _ -> failwith "color required")
+        n
+    in
+    f (northeast (curr_x + 1) (curr_y + 1) board)
+    || f (east (curr_x + 1) curr_y board)
+    || f (southeast (curr_x + 1) (curr_y - 1) board)
+    || f (south curr_x (curr_y - 1) board)
+    || f (southwest (curr_x - 1) (curr_y - 1) board)
+    || f (west (curr_x - 1) curr_y) board
+    || f (northwwest (curr_x - 1) (curr_y + 1))
+    || f (north curr_x (curr_y + 1) board)
 
 let find_all_valid_moves color board =
   let is_valid_move x y =
