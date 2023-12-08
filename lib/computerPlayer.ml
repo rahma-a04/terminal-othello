@@ -9,3 +9,11 @@ let rec generateMoveHelper (possibleMoves : (int * int) list) (v : int)
 let generateMove (possibleMoves : (int * int) list) : int * int =
   let movePos = Random.int (List.length possibleMoves) in
   generateMoveHelper possibleMoves movePos 0
+
+let generateMoveMedium (possibleMoves : (int * int) list) : int * int =
+  let movePos = Random.int (List.length possibleMoves) in
+  generateMoveHelper possibleMoves movePos 0
+
+let generateMoveHard (possibleMoves : (int * int) list) : int * int =
+  let movePos = Random.int (List.length possibleMoves) in
+  generateMoveHelper possibleMoves movePos 0
