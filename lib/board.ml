@@ -29,26 +29,10 @@ let rec to_list_small lst =
       else if h = Black then "Black" :: to_list_small t
       else "White" :: to_list_small t
 
-let black_circle_code = "\u{1F535}"
-let white_circle_code = "\u{26AA}"
-
-let rec to_list_small_unicode lst =
-  match lst with
-  | [] -> []
-  | h :: t ->
-      if h = Empty then "  " :: to_list_small_unicode t
-      else if h = Black then black_circle_code :: to_list_small_unicode t
-      else white_circle_code :: to_list_small_unicode t
-
 let rec to_list board =
   match board with
   | [] -> []
   | h :: t -> to_list_small h :: to_list t
-
-let rec to_list_unicode board =
-  match board with
-  | [] -> []
-  | h :: t -> to_list_small_unicode h :: to_list_unicode t
 
 let rec print_list = function
   | [] -> ()
@@ -61,24 +45,24 @@ let board_row (lst : string list) : unit =
   print_string "| ";
   print_list lst
 
-let border = "-----------------------------------------"
-
 let rec print_list_of_lists = function
   | [] -> ()
   | h :: t ->
       board_row h;
       print_newline ();
-      print_string border;
+      print_string
+        "------------------------------------------------------------------";
       print_newline ();
       print_list_of_lists t
 
 let print_board_top (lst : string list list) : unit =
-  print_string border;
+  print_string
+    "------------------------------------------------------------------";
   print_newline ();
   print_list_of_lists lst
 
 let print_board (board : piece list list) : unit =
-  print_board_top (to_list_unicode board)
+  print_board_top (to_list board)
 
 let rec count_number_of_objs_in_list lst (obj : piece) =
   match lst with
@@ -174,18 +158,18 @@ let rec can_black_play_helper = function
   | White :: tail -> can_black_play_helper tail
   | _ -> false
 
-let can_black_play board positions =
-  let pieces = List.map (fun (x, y) -> get_element x y board) positions in
-  can_black_play_helper pieces
+let can_black_play = function
+  | White :: tail -> can_black_play_helper tail
+  | _ -> false
 
 let rec can_white_play_helper = function
   | White :: _ -> true
   | Black :: tail -> can_white_play_helper tail
   | _ -> false
 
-let can_white_play board positions =
-  let pieces = List.map (fun (x, y) -> get_element x y board) positions in
-  can_white_play_helper pieces
+let can_white_play = function
+  | Black :: tail -> can_white_play_helper tail
+  | _ -> false
 
 let is_legit board curr_x curr_y piece =
   if
@@ -197,16 +181,16 @@ let is_legit board curr_x curr_y piece =
       (match piece with
       | Black -> can_black_play
       | White -> can_white_play
-      | _ -> failwith "color required")
-        n
+      | Empty -> failwith "color required")
+        (List.map (fun (x, y) -> get_element x y board) n)
     in
     f (northeast (curr_x + 1) (curr_y + 1) board)
     || f (east (curr_x + 1) curr_y board)
     || f (southeast (curr_x + 1) (curr_y - 1) board)
     || f (south curr_x (curr_y - 1) board)
     || f (southwest (curr_x - 1) (curr_y - 1) board)
-    || f (west (curr_x - 1) curr_y) board
-    || f (northwwest (curr_x - 1) (curr_y + 1))
+    || f (west (curr_x - 1) curr_y board)
+    || f (northwwest (curr_x - 1) (curr_y + 1) board)
     || f (north curr_x (curr_y + 1) board)
 
 let find_all_valid_moves color board =
@@ -241,8 +225,16 @@ let flip_pieces board x y color =
   in
   let should_flip dir_func =
     match color with
-    | Black -> can_black_play board (dir_func (x + 1) (y + 1) board)
-    | White -> can_white_play board (dir_func (x + 1) (y + 1) board)
+    | Black ->
+        can_black_play
+          (List.map
+             (fun (x, y) -> get_element x y board)
+             (dir_func (x + 1) (y + 1) board))
+    | White ->
+        can_white_play
+          (List.map
+             (fun (x, y) -> get_element x y board)
+             (dir_func (x + 1) (y + 1) board))
     | _ -> false
   in
   List.fold_left
