@@ -81,7 +81,7 @@ let rec play_game board (is_black : bool) =
             play_game board is_black)
 
 let rec play_ComputerPlayer board (is_black : bool)
-    (computerColorisBlack : bool) =
+    (computerColorisBlack : bool) moveGenerator =
   Board.print_board board;
 
   (* check whether game is over *)
@@ -106,9 +106,10 @@ let rec play_ComputerPlayer board (is_black : bool)
     else if potenitalComputerMoves = [] || potentialPlayerMoves = [] then
       let () = print_endline "No more moves left" in
       play_ComputerPlayer board (not is_black) computerColorisBlack
+        moveGenerator
     else if player = computerPlayer then (
       let moves = Board.find_all_valid_moves computerPiece board in
-      let response = ComputerPlayer.generateMove moves in
+      let response = moveGenerator moves board computerPiece in
       match response with
       | row, col ->
           print_endline "\n\n\n";
@@ -117,7 +118,7 @@ let rec play_ComputerPlayer board (is_black : bool)
            ^ string_of_int col);
           play_ComputerPlayer
             (Board.place_and_flip_pieces row col computerPiece board)
-            (not is_black) computerColorisBlack)
+            (not is_black) computerColorisBlack moveGenerator)
     else (
       print_string
         ("[Player: " ^ player
@@ -136,10 +137,11 @@ let rec play_ComputerPlayer board (is_black : bool)
               print_endline "\n\n\n";
               play_ComputerPlayer
                 (Board.place_and_flip_pieces row col piece board)
-                (not is_black) computerColorisBlack
+                (not is_black) computerColorisBlack moveGenerator
           | None ->
               print_endline "\n\n\n***Invalid move! Try again.***";
-              play_ComputerPlayer board (not is_black) computerColorisBlack))
+              play_ComputerPlayer board (not is_black) computerColorisBlack
+                moveGenerator))
 
 let () =
   print_endline
@@ -153,13 +155,33 @@ let () =
       print_endline "Welcome to Othello!";
       print_endline
         "Would you like to be black or white? Responses (black/white)";
-      let next_response = read_line () in
-      match next_response with
-      | "black" -> play_ComputerPlayer Board.empty_board true false
-      | "white" -> play_ComputerPlayer Board.empty_board false true
+      let color = read_line () in
+      print_endline
+        "What level woiuld you like to play? Responses(easy/hard/medium)";
+      let level = read_line () in
+      match (color, level) with
+      | "black", "easy" ->
+          play_ComputerPlayer Board.empty_board true false
+            ComputerPlayer.generateMoveEasy
+      | "white", "easy" ->
+          play_ComputerPlayer Board.empty_board false true
+            ComputerPlayer.generateMoveEasy
+      | "black", "medium" ->
+          play_ComputerPlayer Board.empty_board true false
+            ComputerPlayer.generateMoveMedium
+      | "white", "medium" ->
+          play_ComputerPlayer Board.empty_board false true
+            ComputerPlayer.generateMoveMedium
+      | "black", "hard" ->
+          play_ComputerPlayer Board.empty_board true false
+            ComputerPlayer.generateMoveHard
+      | "white", "hard" ->
+          play_ComputerPlayer Board.empty_board false true
+            ComputerPlayer.generateMoveHard
       | _ ->
-          print_endline "invalid response!";
-          play_ComputerPlayer Board.empty_board true true)
+          print_endline "invalid response! Default is black easy";
+          play_ComputerPlayer Board.empty_board true false
+            ComputerPlayer.generateMoveEasy)
   | "two player" ->
       print_endline "Welcome to Othello!";
       play_game Board.empty_board

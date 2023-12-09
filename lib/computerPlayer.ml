@@ -1,3 +1,5 @@
+open Board
+
 let rec generateMoveHelper (valid_moves : (int * int) list) (v : int)
     (currentNum : int) : int * int =
   match valid_moves with
