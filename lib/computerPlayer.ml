@@ -25,9 +25,10 @@ let generateMoveMedium board color =
   let moves_with_flips = List.map simulate_move valid_moves in
   let compare (flips1, _) (flips2, _) = compare flips2 flips1 in
   match List.sort compare moves_with_flips with
-  | [] -> None
-  | (_, best_move) :: _ -> Some best_move
+  | [] -> raise (Invalid_argument "no more moves :(")
+  | (_, best_move) :: _ -> best_move
 
-let generateMoveHard (possibleMoves : (int * int) list) : int * int =
+let generateMoveHard board color =
+  let possibleMoves = Board.find_all_valid_moves color board in
   let movePos = Random.int (List.length possibleMoves) in
   generateMoveHelper possibleMoves movePos 0
