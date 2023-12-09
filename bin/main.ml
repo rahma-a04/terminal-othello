@@ -81,14 +81,19 @@ let rec play_game board (is_black : bool) =
     let player, piece =
       if is_black then ("Black", Board.Black) else ("White", Board.White)
     in
-
-    (*TODO: this is dumb*)
-    print_string
-      ("[Player: " ^ player
-     ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
-     ^ "Possible Moves: "
-      ^ pp_list pp_int (Board.find_all_valid_moves piece board)
-      ^ "\n>");
+    (* Checks to see if there are moves left for the players*)
+    let potentialPlayerMoves = Board.find_all_valid_moves piece board in
+    if potentialPlayerMoves = [] then
+      let () = print_endline "No more moves left" in
+      play_game board (not is_black)
+    else
+      (*TODO: this is dumb*)
+      print_string
+        ("[Player: " ^ player
+       ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
+       ^ "Possible Moves: "
+        ^ pp_list pp_int (Board.find_all_valid_moves piece board)
+        ^ "\n>");
 
     let response = String.trim (read_line ()) in
     match response with
@@ -108,6 +113,7 @@ let rec play_game board (is_black : bool) =
 let rec play_ComputerPlayer board (is_black : bool)
     (computerColorisBlack : bool) =
   Board.print_board board;
+
   (* check whether game is over *)
   if Board.is_board_filled board then end_game board
   else
@@ -119,7 +125,18 @@ let rec play_ComputerPlayer board (is_black : bool)
       else ("White", Board.White)
     in
 
-    if player = computerPlayer then (
+    let potenitalComputerMoves =
+      Board.find_all_valid_moves computerPiece board
+    in
+    let potentialPlayerMoves = Board.find_all_valid_moves piece board in
+
+    (* Checks to see if there are moves left for the players*)
+    if potentialPlayerMoves = [] && potenitalComputerMoves = [] then
+      end_game board
+    else if potenitalComputerMoves = [] || potentialPlayerMoves = [] then
+      let () = print_endline "No more moves left" in
+      play_ComputerPlayer board (not is_black) computerColorisBlack
+    else if player = computerPlayer then (
       let moves = Board.find_all_valid_moves computerPiece board in
       let response = ComputerPlayer.generateMove moves in
       match response with

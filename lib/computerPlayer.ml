@@ -7,8 +7,11 @@ let rec generateMoveHelper (possibleMoves : (int * int) list) (v : int)
   | [] -> raise (Invalid_argument "no more moves :(")
 
 let generateMove (possibleMoves : (int * int) list) : int * int =
-  let movePos = Random.int (List.length possibleMoves) in
-  generateMoveHelper possibleMoves movePos 0
+  if List.length possibleMoves = 0 then
+    raise (Invalid_argument "error, possible move list is 0")
+  else
+    let movePos = Random.int (List.length possibleMoves) in
+    generateMoveHelper possibleMoves movePos 0
 
 let count_flipped_pieces original_board new_board color =
   let original_count = Board.count_pieces original_board color in
