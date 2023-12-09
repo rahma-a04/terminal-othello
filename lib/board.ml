@@ -207,9 +207,9 @@ let is_legit board curr_x curr_y piece =
     || f (north curr_x (curr_y + 1) board)
 
 let find_all_valid_moves color board =
-  let is_valid_move x y =
-    match get_element x y board with
-    | Empty -> is_legit board x y color
+  let is_valid_move row col =
+    match get_element row col board with
+    | Empty -> is_legit board col row color
     | _ -> false
   in
   let rec find_moves row col acc =
