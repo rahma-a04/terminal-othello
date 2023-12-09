@@ -42,6 +42,19 @@ let letters_to_ints =
     ("h", 7);
   ]
 
+let computerResponseList =
+  [
+    "Looks like you're flipping more than just discs on the board!";
+    "I didn't know we were playing checkers. Oh wait, we're not!";
+    "Do you need a GPS to find a winning move?";
+    "I didn't realize we were playing hide-and-seek with your winning moves.";
+    "Are you trying to set a record for the longest losing streak?";
+    "Are you playing Othello or just arranging the pieces for modern art?";
+    "Are you giving me a head start, or is this your actual strategy?";
+    "Your moves are so weak, even the pieces are yawning.";
+    "I hope your day job doesn't involve decision-making.";
+  ]
+
 let ints_to_letters =
   [
     (0, "a");
@@ -221,6 +234,8 @@ and single (msg : string) (mode : difficulty) (game : game)
                (board_of_game game))
             (board_of_game game) (player_of_game game)
         in
+        let pos = Random.int (List.length computerResponseList) in
+        print_endline (List.nth computerResponseList pos);
         try
           print_endline
             ("Computer move: "
