@@ -74,3 +74,46 @@ let generateMoveHard (valid_moves : (int * int) list) (board : Board.board)
   match List.sort compare moves_with_scores with
   | [] -> raise (Invalid_argument "no more moves :(")
   | (_, _, best_move) :: _ -> best_move
+
+let rec alpha_beta_prune board depth alpha beta color maximizingPlayer =
+  if depth = 0 || Board.is_board_filled board then
+    (evaluate_board board color, (-1, -1))
+  else
+    let valid_moves = Board.find_all_valid_moves color board in
+    if List.length valid_moves = 0 then (evaluate_board board color, (-1, -1))
+    else
+      let best_value =
+        ref (if maximizingPlayer then Int.min_int else Int.max_int)
+      in
+      let best_move = ref (-1, -1) in
+      List.iter
+        (fun (x, y) ->
+          let new_board = Board.place_and_flip_pieces x y color board in
+          let eval, _ =
+            alpha_beta_prune new_board (depth - 1) alpha beta
+              (match color with
+              | White -> Black
+              | Black -> White
+              | Empty -> failwith "bruh")
+              (not maximizingPlayer)
+          in
+          if
+            (maximizingPlayer && eval > !best_value)
+            || ((not maximizingPlayer) && eval < !best_value)
+          then (
+            best_value := eval;
+            best_move := (x, y));
+          if maximizingPlayer then alpha := max !alpha eval
+          else beta := min !beta eval;
+          if !beta <= !alpha then ())
+        valid_moves;
+      (!best_value, !best_move)
+
+(** Generate move for god mode AI using Minimax w/ Alpha-Beta Pruning *)
+let generateMoveExtreme (valid_moves : (int * int) list) board color =
+  let depth = 5 in
+  (*Increase/decrease the depth to increase/decrease difficulty*)
+  let _, best_move =
+    alpha_beta_prune board depth (ref Int.min_int) (ref Int.max_int) color true
+  in
+  best_move
