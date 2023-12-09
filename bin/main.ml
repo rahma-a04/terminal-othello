@@ -140,17 +140,40 @@ and multi (msg : string) (game : game) =
       | End_game -> play (End game)
     end
 
+(* Computer player logic called by main *)
 and single (msg : string) (mode : difficulty) (game : game)
     (is_human_player : bool) =
   (* print the current game state *)
   print_current_game game;
   (* check who is playing the game *)
+  let generate_move =
+    match mode with
+    | Easy -> ComputerPlayer.generateMoveEasy
+    | Medium -> ComputerPlayer.generateMoveMedium
+    | Hard -> ComputerPlayer.generateMoveHard
+    | Extreme -> ComputerPlayer.generateMoveExtreme
+  in
+  let otherPlayer =
+    match player_of_game game with
+    | Black -> Board.White
+    | White -> Board.Black
+    | Empty -> failwith "Something weird is happening"
+  in
   if is_human_player then begin
     print_endline msg;
     let valid_moves_list =
       Board.find_all_valid_moves (player_of_game game) (board_of_game game)
     in
-    if List.length valid_moves_list = 0 then
+    let otherPlayerMoves =
+      Board.find_all_valid_moves otherPlayer (board_of_game game)
+    in
+    if List.length otherPlayerMoves = 0 && List.length valid_moves_list = 0 then
+      play (End game)
+    else if
+      (* todo: check if both the human player and the computer player have no
+         valid moves before checking individual players*)
+      List.length valid_moves_list = 0
+    then
       single "No more valid moves! Skipping your turn..." mode (skip_turn game)
         (not is_human_player)
     else
@@ -176,13 +199,28 @@ and single (msg : string) (mode : difficulty) (game : game)
         | End_game -> play (End game))
   end
   else begin
-    let generate_move =
-      match mode with
-      | Easy -> ComputerPlayer.generateMoveEasy
-      | Medium -> ComputerPlayer.generateMoveMedium
-      | Hard -> ComputerPlayer.generateMoveHard
-      | Extreme -> ComputerPlayer.generateMoveExtreme
+    let valid_moves_list =
+      Board.find_all_valid_moves (player_of_game game) (board_of_game game)
     in
+    let otherPlayerMoves =
+      Board.find_all_valid_moves otherPlayer (board_of_game game)
+    in
+    if List.length otherPlayerMoves = 0 && List.length valid_moves_list = 0 then
+      play (End game)
+    else if
+      (* todo: check if both the human player and the computer player have no
+         valid moves before checking individual players*)
+      List.length valid_moves_list = 0
+    then
+      single "No more valid moves! Skipping your turn..." mode (skip_turn game)
+        is_human_player
+    else
+      print_endline
+        ("VALID MOVES(computer player): "
+        ^ (valid_moves_list
+          |> pp_list (fun (x, y) ->
+                 List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1))));
+    print_string "> ";
     let move =
       generate_move
         (Board.find_all_valid_moves (player_of_game game) (board_of_game game))
@@ -217,7 +255,9 @@ and play (state : state) =
               print_endline "Please choose a valid color!";
               play (Main (Single difficulty, game))))
   | History game -> failwith "U"
-  | End game -> failwith "U"
+  | End game ->
+      print_endline
+        "This is the unimplemnted end game state that has been called."
 
 (* parse input for move multiplayer: check if move is valid -> if yes, place
    piece and update board -> if no, retry for move singleplayer: check if move
