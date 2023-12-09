@@ -68,14 +68,14 @@ let rec print_list_of_lists n = function
       print_newline ();
       print_string "---------------------------------";
       print_newline ();
-      print_list_of_lists (n + 1) t
+      print_list_of_lists (n - 1) t
 
 let print_board_top (lst : string list list) : unit =
   print_string "  A   B   C   D   E   F   G   H";
   print_newline ();
   print_string "---------------------------------";
   print_newline ();
-  print_list_of_lists 1 lst
+  print_list_of_lists 8 lst
 
 let print_board (board : piece list list) : unit =
   print_board_top (to_list board)
