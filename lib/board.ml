@@ -208,7 +208,7 @@ let is_legit board curr_x curr_y piece =
 
 let find_all_valid_moves color board =
   let is_valid_move row col =
-    match get_element row col board with
+    match get_element col row board with
     | Empty -> is_legit board col row color
     | _ -> false
   in
