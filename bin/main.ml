@@ -44,7 +44,8 @@ let letters_to_ints =
 
 let computerResponseList =
   [
-    "Looks like you're flipping more than just discs on the board!";
+    "I'm coming for your job";
+    "You thought you ate :| ";
     "I didn't know we were playing checkers. Oh wait, we're not!";
     "Do you need a GPS to find a winning move?";
     "I didn't realize we were playing hide-and-seek with your winning moves.";
@@ -221,13 +222,6 @@ and single (msg : string) (mode : difficulty) (game : game)
         single "No more valid moves! Skipping your turn..." mode
           (skip_turn game) is_human_player
     | _, _ -> (
-        print_endline
-          ("VALID MOVES(computer player): "
-          ^ (valid_moves_list
-            |> pp_list (fun (x, y) ->
-                   List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1)))
-          );
-        print_string "> ";
         let move =
           generate_move
             (Board.find_all_valid_moves (player_of_game game)
