@@ -247,8 +247,8 @@ let find_all_valid_moves color board =
 (*let place_and_flip_pieces x y color board = let new_board = place_piece x y
   color board in flip_pieces new_board x y color*)
 
-let rec northeastFlip curr_x curr_y color board =
-  let colorOpp =
+let rec northeast_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -256,14 +256,14 @@ let rec northeastFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    northeastFlip (curr_x + 1) (curr_y + 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    northeast_flip (curr_x + 1) (curr_y + 1) color out_board
 
-let rec eastFlip curr_x curr_y color board =
-  let colorOpp =
+let rec east_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -271,14 +271,14 @@ let rec eastFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    eastFlip (curr_x + 1) curr_y color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    east_flip (curr_x + 1) curr_y color out_board
 
-let rec southeastFlip curr_x curr_y color board =
-  let colorOpp =
+let rec southeast_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -286,14 +286,14 @@ let rec southeastFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    southeastFlip (curr_x + 1) (curr_y - 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    southeast_flip (curr_x + 1) (curr_y - 1) color out_board
 
-let rec southFlip curr_x curr_y color board =
-  let colorOpp =
+let rec south_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -301,14 +301,14 @@ let rec southFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    southFlip curr_x (curr_y - 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    south_flip curr_x (curr_y - 1) color out_board
 
-let rec southwestFlip curr_x curr_y color board =
-  let colorOpp =
+let rec southwest_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -316,14 +316,14 @@ let rec southwestFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    southwestFlip (curr_x - 1) (curr_y - 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    southwest_flip (curr_x - 1) (curr_y - 1) color out_board
 
-let rec westFlip curr_x curr_y color board =
-  let colorOpp =
+let rec west_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -331,14 +331,14 @@ let rec westFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    westFlip (curr_x - 1) curr_y color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    west_flip (curr_x - 1) curr_y color out_board
 
-let rec northwestFlip curr_x curr_y color board =
-  let colorOpp =
+let rec northwest_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -346,14 +346,14 @@ let rec northwestFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    northwestFlip (curr_x - 1) (curr_y + 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    northwest_flip (curr_x - 1) (curr_y + 1) color out_board
 
-let rec northFlip curr_x curr_y color board =
-  let colorOpp =
+let rec north_flip curr_x curr_y color board =
+  let color_opp =
     match color with
     | Black -> White
     | White -> Black
@@ -361,11 +361,11 @@ let rec northFlip curr_x curr_y color board =
   in
   if
     curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
-    || get_element curr_x curr_y board <> colorOpp
+    || get_element curr_x curr_y board <> color_opp
   then board
   else
-    let outBoard = update_element curr_x curr_y color board in
-    northFlip curr_x (curr_y + 1) color outBoard
+    let out_board = update_element curr_x curr_y color board in
+    north_flip curr_x (curr_y + 1) color out_board
 
 let place_and_flip_pieces curr_x curr_y piece board =
   if
@@ -383,39 +383,39 @@ let place_and_flip_pieces curr_x curr_y piece board =
     let board_with_piece = place_piece curr_x curr_y piece board in
     let board1 =
       if f (northeast (curr_x + 1) (curr_y + 1) board) then
-        northeastFlip (curr_x + 1) (curr_y + 1) piece board_with_piece
+        northeast_flip (curr_x + 1) (curr_y + 1) piece board_with_piece
       else board_with_piece
     in
     let board2 =
       if f (east (curr_x + 1) curr_y board) then
-        eastFlip (curr_x + 1) curr_y piece board1
+        east_flip (curr_x + 1) curr_y piece board1
       else board1
     in
     let board3 =
       if f (southeast (curr_x + 1) (curr_y - 1) board) then
-        southeastFlip (curr_x + 1) (curr_y - 1) piece board2
+        southeast_flip (curr_x + 1) (curr_y - 1) piece board2
       else board2
     in
     let board4 =
       if f (south curr_x (curr_y - 1) board) then
-        southFlip curr_x (curr_y - 1) piece board3
+        south_flip curr_x (curr_y - 1) piece board3
       else board3
     in
     let board5 =
       if f (southwest (curr_x - 1) (curr_y - 1) board) then
-        southwestFlip (curr_x - 1) (curr_y - 1) piece board4
+        southwest_flip (curr_x - 1) (curr_y - 1) piece board4
       else board4
     in
     let board6 =
       if f (west (curr_x - 1) curr_y board) then
-        westFlip (curr_x - 1) curr_y piece board5
+        west_flip (curr_x - 1) curr_y piece board5
       else board5
     in
     let board7 =
       if f (northwest (curr_x - 1) (curr_y + 1) board) then
-        northwestFlip (curr_x - 1) (curr_y + 1) piece board6
+        northwest_flip (curr_x - 1) (curr_y + 1) piece board6
       else board6
     in
     if f (north curr_x (curr_y + 1) board) then
-      northFlip curr_x (curr_y + 1) piece board7
+      north_flip curr_x (curr_y + 1) piece board7
     else board7
