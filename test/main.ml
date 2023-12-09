@@ -1,9 +1,6 @@
 open OUnit2
 open Othello
-
-let black_circle_code = "\u{25CB}"
-let white_circle_code = "\u{25CF}"
-let empty_code = " "
+open Board
 
 let pp_list pp_elt lst =
   let pp_elts lst =

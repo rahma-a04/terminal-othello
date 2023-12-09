@@ -5,6 +5,10 @@ type piece =
 
 type board = piece list list
 
+val black_circle_code : string
+val white_circle_code : string
+val empty_code : string
+
 val empty_board : board
 (** The empty Othello board. *)
 

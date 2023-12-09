@@ -1,32 +1,20 @@
 open Othello
+open Ui
 
-(** Parses a move input on a given board into tuple form. Requires: [move] must
-    be in the form "a b", where a is the row and b is the column of the intended
-    move. Returns None if the move is invalid. *)
-let evaluate_move (move : string) board color : (int * int) option =
-  let row = int_of_string (String.sub move 0 1) in
-  let col = int_of_string (String.sub move 2 1) in
-  if Board.is_legit board row col color then Some (row, col) else None
-(*TODO: this impl sucks, figure out a better way*)
-(*TODO: this impl isn't defensive enough; need to catch invalid argument errors*)
+type difficulty =
+  | Easy
+  | Medium
+  | Hard
 
-(** Ends the game. Displays the final scores and the winner on the terminal
-    window. *)
-let end_game board =
-  let black_score = Board.count_pieces board Board.Black in
-  (*todo: it would prob be better to return a tuple in count_pieces*)
-  let white_score = Board.count_pieces board Board.White in
-  let winner =
-    if black_score > white_score then "Black"
-    else if black_score = white_score then "Tie"
-    else "White"
-  in
-  print_endline
-    ("Game over!\nBlack score: " ^ string_of_int black_score ^ "\nWhite score: "
-   ^ string_of_int white_score ^ "\nWINNER: " ^ winner)
+type gamemode =
+  | Single of difficulty
+  | Multi
 
-(** Main gameplay function. Allows players to input moves and place pieces in
-    alternating order until board is filled. *)
+type state =
+  | Initialize
+  | Main of (gamemode * game)
+  | History of game
+  | End of game
 
 let pp_list pp_elt lst =
   let pp_elts lst =
@@ -41,150 +29,109 @@ let pp_list pp_elt lst =
   in
   "[" ^ pp_elts lst ^ "]"
 
-let pp_int (x, y) = "\"" ^ string_of_int x ^ ", " ^ string_of_int y ^ "\""
+let column_map =
+  [
+    ("a", 0);
+    ("b", 1);
+    ("c", 2);
+    ("d", 3);
+    ("e", 4);
+    ("f", 5);
+    ("g", 6);
+    ("h", 7);
+  ]
 
-let rec play_game board (is_black : bool) =
-  Board.print_board board;
-  (* check whether game is over *)
-  if Board.is_board_filled board then end_game board
-  else
-    let player, piece =
-      if is_black then ("Black", Board.Black) else ("White", Board.White)
-    in
-    (* Checks to see if there are moves left for the players*)
-    let potentialPlayerMoves = Board.find_all_valid_moves piece board in
-    if potentialPlayerMoves = [] then
-      let () = print_endline "No more moves left" in
-      play_game board (not is_black)
-    else
-      (*TODO: this is dumb*)
-      print_string
-        ("[Player: " ^ player
-       ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
-       ^ "Possible Moves: "
-        ^ pp_list pp_int (Board.find_all_valid_moves piece board)
-        ^ "\n>");
+let eval_move (str : string) (game : game) =
+  match
+    str |> String.trim |> String.lowercase_ascii |> String.split_on_char ' '
+    |> List.filter (fun s -> s <> "")
+  with
+  | [ col_letter; row_one ] -> begin
+      try
+        update
+          (int_of_string row_one - 1) (*could fail with Failure*)
+          (List.assoc col_letter column_map) (*could fail with Not_found*)
+          game
+      with Not_found | Failure _ ->
+        raise (Invalid_argument "Could not parse input")
+    end
+  | _ -> raise (Invalid_argument "Could not parse input")
 
-    let response = String.trim (read_line ()) in
-    match response with
-    | "q" -> print_endline "goodbye!"
-    | _ -> (
-        let row_col =
-          evaluate_move response board (if is_black then Black else White)
-        in
-        match row_col with
-        | Some (row, col) ->
-            print_endline "\n\n\n";
-            play_game (Board.place_piece row col piece board) (not is_black)
-        | None ->
-            print_endline "\n\n\n***Invalid move! Try again.***";
-            play_game board is_black)
+let init_msg =
+  "Welcome to Othello!\n\
+   Type 's' for singleplayer, 'm' for multiplayer, 'q' to quit, and 'h' for \
+   help."
 
-let rec play_ComputerPlayer board (is_black : bool)
-    (computerColorisBlack : bool) moveGenerator =
-  Board.print_board board;
+let invalid_msg = "Invalid response! Type 'h' for valid commands"
 
-  (* check whether game is over *)
-  if Board.is_board_filled board then end_game board
-  else
-    let player, piece =
-      if is_black then ("Black", Board.Black) else ("White", Board.White)
-    in
-    let computerPlayer, computerPiece =
-      if computerColorisBlack then ("Black", Board.Black)
-      else ("White", Board.White)
-    in
+let init_help_commands =
+  "COMMANDS:\n\n\
+   \'s easy': enters a singleplayer game against an easy difficulty AI opponent\n\
+   's medium': enters a singleplayer game against a medium difficulty AI \
+   opponent\n\
+   's hard': enters a singleplayer game against a hard difficulty AI opponent\n\
+   'm': enters a multiplayer game\n\
+   'h': displays commands\n\
+   'q': quits game"
 
-    let potenitalComputerMoves =
-      Board.find_all_valid_moves computerPiece board
-    in
-    let potentialPlayerMoves = Board.find_all_valid_moves piece board in
+let multi_game_commands =
+  "COMMANDS:\n\n\n\
+  \  To enter a move, please type 'column row' (i.e. F 6)\n\n\
+  \  'h': displays commands\n\n\
+  \  'q': quits game"
 
-    (* Checks to see if there are moves left for the players*)
-    if potentialPlayerMoves = [] && potenitalComputerMoves = [] then
-      end_game board
-    else if potenitalComputerMoves = [] || potentialPlayerMoves = [] then
-      let () = print_endline "No more moves left" in
-      play_ComputerPlayer board (not is_black) computerColorisBlack
-        moveGenerator
-    else if player = computerPlayer then (
-      let moves = Board.find_all_valid_moves computerPiece board in
-      let response = moveGenerator moves board computerPiece in
-      match response with
-      | row, col ->
-          print_endline "\n\n\n";
-          print_endline
-            ("Interesting move, let me think!  : " ^ string_of_int row ^ ", "
-           ^ string_of_int col);
-          play_ComputerPlayer
-            (Board.place_and_flip_pieces row col computerPiece board)
-            (not is_black) computerColorisBlack moveGenerator)
-    else (
-      print_string
-        ("[Player: " ^ player
-       ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
-       ^ "Possible Moves: "
-        ^ pp_list pp_int (Board.find_all_valid_moves piece board)
-        ^ "\n>");
+let default_main_msg = "Enter move (e.g. F 5)"
 
-      let response = String.trim (read_line ()) in
-      match response with
-      | "q" -> print_endline "goodbye!"
-      | _ -> (
-          let row_col = evaluate_move response board piece in
-          match row_col with
-          | Some (row, col) ->
-              print_endline "\n\n\n";
-              play_ComputerPlayer
-                (Board.place_and_flip_pieces row col piece board)
-                (not is_black) computerColorisBlack moveGenerator
-          | None ->
-              print_endline "\n\n\n***Invalid move! Try again.***";
-              play_ComputerPlayer board (not is_black) computerColorisBlack
-                moveGenerator))
-
-let () =
-  print_endline
-    "Welcome to Othello! Would you like to start a computer game or a two \
-     player game? You can type n to exit. Reponses (computer player, two \
-     player,n)";
+let rec initialize (msg : string) =
+  print_endline msg;
   print_string "> ";
-  let response = read_line () in
-  match String.trim response with
-  | "computer player" -> (
-      print_endline "Welcome to Othello!";
-      print_endline
-        "Would you like to be black or white? Responses (black/white)";
-      let color = read_line () in
-      print_endline
-        "What level woiuld you like to play? Responses(easy/hard/medium)";
-      let level = read_line () in
-      match (color, level) with
-      | "black", "easy" ->
-          play_ComputerPlayer Board.empty_board true false
-            ComputerPlayer.generateMoveEasy
-      | "white", "easy" ->
-          play_ComputerPlayer Board.empty_board false true
-            ComputerPlayer.generateMoveEasy
-      | "black", "medium" ->
-          play_ComputerPlayer Board.empty_board true false
-            ComputerPlayer.generateMoveMedium
-      | "white", "medium" ->
-          play_ComputerPlayer Board.empty_board false true
-            ComputerPlayer.generateMoveMedium
-      | "black", "hard" ->
-          play_ComputerPlayer Board.empty_board true false
-            ComputerPlayer.generateMoveHard
-      | "white", "hard" ->
-          play_ComputerPlayer Board.empty_board false true
-            ComputerPlayer.generateMoveHard
-      | _ ->
-          print_endline "invalid response! Default is black easy";
-          play_ComputerPlayer Board.empty_board true false
-            ComputerPlayer.generateMoveEasy)
-  | "two player" ->
-      print_endline "Welcome to Othello!";
-      play_game Board.empty_board
-        true (*note: change it so that it's case-insensitive*)
-  | "n" -> print_endline ("Goodbye!" ^ "\n" ^ "Come back another time :)")
-  | _ -> print_endline "Invalid response"
+  let response =
+    read_line () |> String.trim |> String.lowercase_ascii
+    |> String.split_on_char ' '
+    |> List.filter (fun s -> s <> "")
+  in
+  match response with
+  | [ "s"; "easy" ] -> play (Main (Single Easy, Ui.new_game))
+  | [ "s"; "medium" ] -> play (Main (Single Medium, Ui.new_game))
+  | [ "s"; "hard" ] -> play (Main (Single Hard, Ui.new_game))
+  | [ "m" ] -> play (Main (Multi, Ui.new_game))
+  | [ "q" ] -> print_endline "Goodbye!"
+  | [ "h" ] -> initialize init_help_commands
+  | _ -> initialize invalid_msg
+
+and multi (msg : string) (game : game) =
+  print_current_game game;
+  print_endline msg;
+  print_endline
+    ("VALID MOVES: "
+    ^ (Board.find_all_valid_moves (player_of_game game) (board_of_game game)
+      |> pp_list (fun (x, y) -> string_of_int x ^ " " ^ string_of_int y)));
+  print_string "> ";
+  let resp = read_line () |> String.trim |> String.lowercase_ascii in
+  match resp with
+  | "h" -> multi multi_game_commands game
+  | "q" -> print_endline "Goodbye!"
+  | _ -> (
+      try
+        let updated_game = eval_move resp game in
+        multi default_main_msg updated_game
+      with Invalid_argument e -> multi (invalid_msg ^ "\nERROR: " ^ e) game)
+
+and play (state : state) =
+  match state with
+  | Initialize -> initialize init_msg
+  | Main (mode, game) -> (
+      match mode with
+      | Multi -> multi default_main_msg game
+      | Single difficulty -> failwith "U")
+  | History game -> failwith "U"
+  | End game -> failwith "U"
+
+(* parse input for move multiplayer: check if move is valid -> if yes, place
+   piece and update board -> if no, retry for move singleplayer: check if move
+   is valid -> if yes, place piece and update board -> pass to AI -> place AI
+   piece and update board for history: print history -> switch to a new game
+   mode -> check if represents a valid location in history for help: print help
+   commands*)
+
+let () = play Initialize
