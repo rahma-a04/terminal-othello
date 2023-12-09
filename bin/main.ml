@@ -190,7 +190,7 @@ and single (msg : string) (mode : difficulty) (game : game)
         ^ " "
         ^ string_of_int (snd move));
       single default_main_msg mode
-        (update (fst move) (snd move) game)
+        (update (snd move) (fst move) game)
         (not is_human_player)
     with End_game -> play (End game)
   end
