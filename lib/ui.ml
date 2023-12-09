@@ -45,12 +45,20 @@ let update (row : int) (col : int) (game : game) : game =
       | true, false ->
           { board = b; move_num = n; player = new_player } :: h :: t
       | _ ->
-          if is_legit b col row p then
-            let new_board = place_and_flip_pieces col row p b in
+          if is_legit b row col p then
+            let new_board = place_and_flip_pieces row col p b in
             { board = new_board; move_num = n + 1; player = new_player }
             :: h :: t
           else raise (Invalid_argument "Not a valid move")
     end
+  | [] -> failwith "Invalid input: game doesn't exist"
+
+(** Skips the current player's turn in the game. *)
+let skip_turn (game : game) =
+  match game with
+  | { board = b; move_num = n; player = p } :: t ->
+      let new_player = if p = White then Black else White in
+      { board = b; move_num = n; player = new_player } :: t
   | [] -> failwith "Invalid input: game doesn't exist"
 
 let print_curr_state (state : game_state) =

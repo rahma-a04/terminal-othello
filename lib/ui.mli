@@ -16,6 +16,7 @@ val new_game : game
 
 val board_of_game : game -> board
 val player_of_game : game -> piece
+val skip_turn : game -> game
 
 val update : int -> int -> game -> game
 (** [update player row col game] is the game after [player] has placed a new

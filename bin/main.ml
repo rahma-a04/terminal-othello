@@ -29,7 +29,7 @@ let pp_list pp_elt lst =
   in
   "[" ^ pp_elts lst ^ "]"
 
-let column_map =
+let letters_to_ints =
   [
     ("a", 0);
     ("b", 1);
@@ -41,6 +41,18 @@ let column_map =
     ("h", 7);
   ]
 
+let ints_to_letters =
+  [
+    (0, "a");
+    (1, "b");
+    (2, "c");
+    (3, "d");
+    (4, "e");
+    (5, "f");
+    (6, "g");
+    (7, "h");
+  ]
+
 let eval_move (str : string) (game : game) =
   match
     str |> String.trim |> String.lowercase_ascii |> String.split_on_char ' '
@@ -50,7 +62,7 @@ let eval_move (str : string) (game : game) =
       try
         update
           (int_of_string row_one - 1) (*could fail with Failure*)
-          (List.assoc col_letter column_map) (*could fail with Not_found*)
+          (List.assoc col_letter letters_to_ints) (*could fail with Not_found*)
           game
       with Not_found | Failure _ ->
         raise (Invalid_argument "Could not parse input")
@@ -106,7 +118,8 @@ and multi (msg : string) (game : game) =
   print_endline
     ("VALID MOVES: "
     ^ (Board.find_all_valid_moves (player_of_game game) (board_of_game game)
-      |> pp_list (fun (x, y) -> string_of_int x ^ " " ^ string_of_int y)));
+      |> pp_list (fun (x, y) ->
+             List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1))));
   print_string "> ";
   let resp = read_line () |> String.trim |> String.lowercase_ascii in
   match resp with
@@ -130,19 +143,29 @@ and single (msg : string) (mode : difficulty) (game : game)
   (* check who is playing the game *)
   if is_human_player then begin
     print_endline msg;
-    print_endline
-      ("VALID MOVES: "
-      ^ (Board.find_all_valid_moves (player_of_game game) (board_of_game game)
-        |> pp_list (fun (x, y) -> string_of_int x ^ " " ^ string_of_int y)));
+    let valid_moves_list =
+      Board.find_all_valid_moves (player_of_game game) (board_of_game game)
+    in
+    if List.length valid_moves_list = 0 then
+      single "No more valid moves! Skipping your turn..." mode (skip_turn game)
+        (not is_human_player)
+    else
+      print_endline
+        ("VALID MOVES: "
+        ^ (valid_moves_list
+          |> pp_list (fun (x, y) ->
+                 List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1))));
     print_string "> ";
     let resp = read_line () |> String.trim |> String.lowercase_ascii in
     match resp with
     | "h" -> single multi_game_commands mode game is_human_player
-    | "q" -> print_string "Goodbye"
+    | "q" -> print_string "Goodbye!"
     | _ -> (
         try
-          single default_main_msg mode (eval_move resp game)
-            (not is_human_player)
+          if Board.is_board_filled (board_of_game game) then play (End game)
+          else
+            single default_main_msg mode (eval_move resp game)
+              (not is_human_player)
         with
         | Invalid_argument e ->
             single (invalid_msg ^ "\nERROR: " ^ e) mode game is_human_player
@@ -161,8 +184,13 @@ and single (msg : string) (mode : difficulty) (game : game)
         (board_of_game game) (player_of_game game)
     in
     try
+      print_endline
+        ("Computer move: "
+        ^ string_of_int (fst move)
+        ^ " "
+        ^ string_of_int (snd move));
       single default_main_msg mode
-        (update (snd move) (fst move) game)
+        (update (fst move) (snd move) game)
         (not is_human_player)
     with End_game -> play (End game)
   end
