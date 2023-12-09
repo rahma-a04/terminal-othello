@@ -167,36 +167,33 @@ and single (msg : string) (mode : difficulty) (game : game)
     let otherPlayerMoves =
       Board.find_all_valid_moves otherPlayer (board_of_game game)
     in
-    if List.length otherPlayerMoves = 0 && List.length valid_moves_list = 0 then
-      play (End game)
-    else if
-      (* todo: check if both the human player and the computer player have no
-         valid moves before checking individual players*)
-      List.length valid_moves_list = 0
-    then
-      single "No more valid moves! Skipping your turn..." mode (skip_turn game)
-        (not is_human_player)
-    else
-      print_endline
-        ("VALID MOVES: "
-        ^ (valid_moves_list
-          |> pp_list (fun (x, y) ->
-                 List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1))));
-    print_string "> ";
-    let resp = read_line () |> String.trim |> String.lowercase_ascii in
-    match resp with
-    | "h" -> single multi_game_commands mode game is_human_player
-    | "q" -> print_string "Goodbye!"
-    | _ -> (
-        try
-          if Board.is_board_filled (board_of_game game) then play (End game)
-          else
-            single default_main_msg mode (eval_move resp game)
-              (not is_human_player)
-        with
-        | Invalid_argument e ->
-            single (invalid_msg ^ "\nERROR: " ^ e) mode game is_human_player
-        | End_game -> play (End game))
+    match (List.length otherPlayerMoves, List.length valid_moves_list) with
+    | 0, 0 -> play (End game)
+    | _, 0 ->
+        single "No more valid moves! Skipping your turn..." mode
+          (skip_turn game) (not is_human_player)
+    | _, _ -> (
+        print_endline
+          ("VALID MOVES: "
+          ^ (valid_moves_list
+            |> pp_list (fun (x, y) ->
+                   List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1)))
+          );
+        print_string "> ";
+        let resp = read_line () |> String.trim |> String.lowercase_ascii in
+        match resp with
+        | "h" -> single multi_game_commands mode game is_human_player
+        | "q" -> print_string "Goodbye!"
+        | _ -> (
+            try
+              if Board.is_board_filled (board_of_game game) then play (End game)
+              else
+                single default_main_msg mode (eval_move resp game)
+                  (not is_human_player)
+            with
+            | Invalid_argument e ->
+                single (invalid_msg ^ "\nERROR: " ^ e) mode game is_human_player
+            | End_game -> play (End game)))
   end
   else begin
     let valid_moves_list =
@@ -205,38 +202,50 @@ and single (msg : string) (mode : difficulty) (game : game)
     let otherPlayerMoves =
       Board.find_all_valid_moves otherPlayer (board_of_game game)
     in
-    if List.length otherPlayerMoves = 0 && List.length valid_moves_list = 0 then
-      play (End game)
-    else if
-      (* todo: check if both the human player and the computer player have no
-         valid moves before checking individual players*)
-      List.length valid_moves_list = 0
-    then
-      single "No more valid moves! Skipping your turn..." mode (skip_turn game)
-        is_human_player
-    else
-      print_endline
-        ("VALID MOVES(computer player): "
-        ^ (valid_moves_list
-          |> pp_list (fun (x, y) ->
-                 List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1))));
-    print_string "> ";
-    let move =
-      generate_move
-        (Board.find_all_valid_moves (player_of_game game) (board_of_game game))
-        (board_of_game game) (player_of_game game)
-    in
-    try
-      print_endline
-        ("Computer move: "
-        ^ string_of_int (fst move)
-        ^ " "
-        ^ string_of_int (snd move));
-      single default_main_msg mode
-        (update (snd move) (fst move) game)
-        (not is_human_player)
-    with End_game -> play (End game)
+    match (List.length otherPlayerMoves, List.length valid_moves_list) with
+    | 0, 0 -> play (End game)
+    | _, 0 ->
+        single "No more valid moves! Skipping your turn..." mode
+          (skip_turn game) is_human_player
+    | _, _ -> (
+        print_endline
+          ("VALID MOVES(computer player): "
+          ^ (valid_moves_list
+            |> pp_list (fun (x, y) ->
+                   List.assoc x ints_to_letters ^ " " ^ string_of_int (y + 1)))
+          );
+        print_string "> ";
+        let move =
+          generate_move
+            (Board.find_all_valid_moves (player_of_game game)
+               (board_of_game game))
+            (board_of_game game) (player_of_game game)
+        in
+        try
+          print_endline
+            ("Computer move: "
+            ^ string_of_int (fst move)
+            ^ " "
+            ^ string_of_int (snd move));
+          single default_main_msg mode
+            (update (snd move) (fst move) game)
+            (not is_human_player)
+        with End_game -> play (End game))
   end
+
+and end_game (game : game) =
+  let board = board_of_game game in
+  let black_score = Board.count_pieces board Board.Black in
+  (*todo: it would prob be better to return a tuple in count_pieces*)
+  let white_score = Board.count_pieces board Board.White in
+  let winner =
+    if black_score > white_score then "Black"
+    else if black_score = white_score then "Tie!"
+    else "White"
+  in
+  print_endline
+    ("Game over!\nBlack score: " ^ string_of_int black_score ^ "\nWhite score: "
+   ^ string_of_int white_score ^ "\nWINNER: " ^ winner)
 
 and play (state : state) =
   match state with
@@ -255,9 +264,7 @@ and play (state : state) =
               print_endline "Please choose a valid color!";
               play (Main (Single difficulty, game))))
   | History game -> failwith "U"
-  | End game ->
-      print_endline
-        "This is the unimplemnted end game state that has been called."
+  | End game -> end_game game
 
 (* parse input for move multiplayer: check if move is valid -> if yes, place
    piece and update board -> if no, retry for move singleplayer: check if move
