@@ -13,8 +13,8 @@ let empty_board =
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-    [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
+    [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
