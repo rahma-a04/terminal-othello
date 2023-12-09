@@ -30,8 +30,8 @@ val to_list : board -> string list list
     with "Empty", Black corresponding with "Black", and White corresponding with
     "White". *)
 
-val to_list_small_unicode : piece list -> string list
-val to_list_unicode : board -> string list list
+(* val to_list_small_unicode : piece list -> string list val to_list_unicode :
+   board -> string list list *)
 
 val to_piece_list : board -> piece list list
 (** Converts a board into a list of Piece lists *)
