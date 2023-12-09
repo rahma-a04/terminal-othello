@@ -201,6 +201,8 @@ and single (msg : string) (mode : difficulty) (game : game)
         | "q" -> print_string "Goodbye!"
         | _ -> (
             try
+              let pos = Random.int (List.length computerResponseList) in
+              print_endline (List.nth computerResponseList pos);
               if Board.is_board_filled (board_of_game game) then play (End game)
               else
                 single default_main_msg mode (eval_move resp game)
@@ -229,8 +231,6 @@ and single (msg : string) (mode : difficulty) (game : game)
                (board_of_game game))
             (board_of_game game) (player_of_game game)
         in
-        let pos = Random.int (List.length computerResponseList) in
-        print_endline (List.nth computerResponseList pos);
         try
           print_endline
             ("Computer move: "
