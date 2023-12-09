@@ -83,7 +83,7 @@ let init_help_commands =
    's medium': enters a singleplayer game against a medium difficulty AI \
    opponent\n\
    's hard': enters a singleplayer game against a hard difficulty AI opponent\n\
-   's godmode': enters a singleplayer game against a extremely difficulty AI \
+   's godmode': enters a singleplayer game against a extremely difficult AI \
    opponent\n\
    'm': enters a multiplayer game\n\
    'h': displays commands\n\

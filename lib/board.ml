@@ -1,8 +1,5 @@
-(*open Piece*)
 (** creates the board of Othello, and provide a function that prints it out in
     terminal. *)
-
-(*open Position*)
 
 type piece =
   | Black
@@ -220,25 +217,6 @@ let find_all_valid_moves color board =
     else find_moves row (col + 1) acc
   in
   find_moves 0 0 []
-
-(*let flip_in_direction board dir_func x y color = let positions = dir_func x y
-  board in let rec flip_sequence pos_list board = match pos_list with | [] ->
-  board | (px, py) :: rest -> ( match get_element px py board with | piece when
-  piece = color -> board | _ -> flip_sequence rest (update_element px py color
-  board)) in match positions with | (px, py) :: _ when get_element px py board =
-  color -> board | _ -> flip_sequence positions board
-
-  let flip_pieces board x y color = let directions = [ northeast; east;
-  southeast; south; southwest; west; northwest; north ] in let should_flip
-  dir_func = match color with | Black -> can_black_play (List.map (fun (x, y) ->
-  get_element x y board) (dir_func (x + 1) (y + 1) board)) | White ->
-  can_white_play (List.map (fun (x, y) -> get_element x y board) (dir_func (x +
-  1) (y + 1) board)) | _ -> false in List.fold_left (fun acc_board dir_func ->
-  if should_flip dir_func then flip_in_direction acc_board dir_func (x + 1) (y +
-  1) color else acc_board) board directions*)
-
-(*let place_and_flip_pieces x y color board = let new_board = place_piece x y
-  color board in flip_pieces new_board x y color*)
 
 let rec northeast_flip curr_x curr_y color board =
   let color_opp =
