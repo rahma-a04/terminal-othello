@@ -6,7 +6,7 @@ let rec generateMoveHelper (valid_moves : (int * int) list) (v : int)
       else (x, y)
   | [] -> raise (Invalid_argument "no more moves :(")
 
-let generateMove valid_moves board color =
+let generateMoveEasy valid_moves board color =
   if List.length valid_moves = 0 then
     raise (Invalid_argument "error, possible move list is 0")
   else
