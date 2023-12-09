@@ -51,36 +51,6 @@ let rec play_game board (is_black : bool) =
     let player, piece =
       if is_black then ("Black", Board.Black) else ("White", Board.White)
     in
-
-    (*TODO: this is dumb*)
-    print_string
-      ("[Player: " ^ player
-     ^ "]\nEnter move as 'row col' (i.e. 3 2)\nType 'q' to quit\n "
-     ^ "Possible Moves: "
-      ^ pp_list pp_int (Board.find_all_valid_moves piece board)
-      ^ "\n>");
-
-    let response = String.trim (read_line ()) in
-    match response with
-    | "q" -> print_endline "goodbye!"
-    | _ -> (
-        let row_col = evaluate_move response board piece in
-        match row_col with
-        | Some (row, col) ->
-            print_endline "\n\n\n";
-            play_game (Board.place_piece row col piece board) (not is_black)
-        | None ->
-            print_endline "\n\n\n***Invalid move! Try again.***";
-            play_game board is_black)
-
-let rec play_game board (is_black : bool) =
-  Board.print_board board;
-  (* check whether game is over *)
-  if Board.is_board_filled board then end_game board
-  else
-    let player, piece =
-      if is_black then ("Black", Board.Black) else ("White", Board.White)
-    in
     (* Checks to see if there are moves left for the players*)
     let potentialPlayerMoves = Board.find_all_valid_moves piece board in
     if potentialPlayerMoves = [] then
