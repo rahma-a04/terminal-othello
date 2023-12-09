@@ -2,20 +2,6 @@ open OUnit2
 open Othello
 open Board
 
-let pp_list pp_elt lst =
-  let pp_elts lst =
-    let rec loop n acc = function
-      | [] -> acc
-      | [ h ] -> acc ^ pp_elt h
-      | h1 :: (_ :: _ as t') ->
-          if n = 100 then acc ^ "..." (* stop printing long list *)
-          else loop (n + 1) (acc ^ pp_elt h1 ^ "; ") t'
-    in
-    loop 0 "" lst
-  in
-  Printf.sprintf "[%s]" (pp_elts lst)
-
-let pp_string s = "\"" ^ s ^ "\""
 let black_circle_code = "\u{25CB}"
 let white_circle_code = "\u{25CF}"
 let empty_code = " "
