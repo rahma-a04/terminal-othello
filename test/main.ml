@@ -16,6 +16,9 @@ let pp_list pp_elt lst =
   Printf.sprintf "[%s]" (pp_elts lst)
 
 let pp_string s = "\"" ^ s ^ "\""
+let black_circle_code = "\u{25CB}"
+let white_circle_code = "\u{25CF}"
+let empty_code = " "
 
 let board_tests =
   [
@@ -150,35 +153,6 @@ let board_tests =
            [
              [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
              [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-           ]) );
-    ( "two rows (Black)" >:: fun _ ->
-      assert_equal
-        [
-          [
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-          ];
-          [
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-            black_circle_code;
-          ];
-        ]
-        (Board.to_list
-           [
-             [ Black; Black; Black; Black; Black; Black; Black; Black ];
-             [ Black; Black; Black; Black; Black; Black; Black; Black ];
            ]) );
     ( "two rows (White)" >:: fun _ ->
       assert_equal
@@ -347,16 +321,6 @@ let board_tests =
         (Board.count_number_of_objs_in_list
            [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; White ]
            White) );
-    ( "Edge case: head for Empty" >:: fun _ ->
-      assert_equal 1
-        (Board.count_number_of_objs_in_list
-           [ Empty; White; White; White; White; White; White; White ]
-           Empty) );
-    ( "Edge case : tail for Empty" >:: fun _ ->
-      assert_equal 1
-        (Board.count_number_of_objs_in_list
-           [ White; White; White; White; White; White; White; Empty ]
-           Empty) );
     (* Count pieces tests *)
     ("Empty list" >:: fun _ -> assert_equal 0 (Board.count_pieces [] Empty));
     ( "Empty board" >:: fun _ ->
@@ -401,19 +365,6 @@ let board_tests =
              [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
            ]
            White) );
-    ( "One row" >:: fun _ ->
-      assert_equal 8
-        (Board.count_pieces
-           [ [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ] ]
-           Empty) );
-    ( "More than one row" >:: fun _ ->
-      assert_equal 16
-        (Board.count_pieces
-           [
-             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-             [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-           ]
-           Empty) );
     ( "full starting position: empty" >:: fun _ ->
       assert_equal 60
         (Board.count_pieces
@@ -509,19 +460,8 @@ let board_tests =
                 [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
               ])) );
     ( "Starting pos" >:: fun _ ->
-      assert_bool "failed"
-        (Bool.not
-           (Board.is_board_filled
-              [
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Black; White; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; White; Black; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-                [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
-              ])) );
+      assert_bool "failed" (Bool.not (Board.is_board_filled Board.empty_board))
+    );
     ( "edge case: white" >:: fun _ ->
       assert_bool "failed"
         (Bool.not

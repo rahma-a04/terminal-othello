@@ -72,8 +72,8 @@ let eval_move (str : string) (game : game) =
 
 let init_msg =
   "Welcome to Othello!\n\
-   Type 's' for singleplayer, 'm' for multiplayer, 'q' to quit, and 'h' for \
-   help."
+   Type 's difficulty', with difficulty being easy, medium, hard, or godmode, \
+   for singleplayer, 'm' for multiplayer, 'q' to quit, and 'h' for help."
 
 let invalid_msg = "Invalid response! Type 'h' for valid commands"
 
@@ -83,6 +83,8 @@ let init_help_commands =
    's medium': enters a singleplayer game against a medium difficulty AI \
    opponent\n\
    's hard': enters a singleplayer game against a hard difficulty AI opponent\n\
+   's godmode': enters a singleplayer game against a extremely difficulty AI \
+   opponent\n\
    'm': enters a multiplayer game\n\
    'h': displays commands\n\
    'q': quits game"
@@ -108,6 +110,7 @@ let rec initialize (msg : string) =
   | [ "s"; "easy" ] -> play (Main (Single Easy, Ui.new_game))
   | [ "s"; "medium" ] -> play (Main (Single Medium, Ui.new_game))
   | [ "s"; "hard" ] -> play (Main (Single Hard, Ui.new_game))
+  | [ "s"; "godmode" ] -> play (Main (Single Extreme, Ui.new_game))
   | [ "m" ] -> play (Main (Multi, Ui.new_game))
   | [ "q" ] -> print_endline "Goodbye!"
   | [ "h" ] -> initialize init_help_commands
