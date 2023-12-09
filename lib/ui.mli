@@ -1,5 +1,7 @@
 open Board
 
+exception End_game
+
 type game_state
 (** Type representing a single snapshot of the game at any given point in time.
     Includes the current board, the number of completed moves, and the current

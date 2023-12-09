@@ -81,6 +81,7 @@ let multi_game_commands =
   \  'q': quits game"
 
 let default_main_msg = "Enter move (e.g. F 5)"
+let single_choose_color = "Choose 'b' to play as Black, 'w' to play as White"
 
 let rec initialize (msg : string) =
   print_endline msg;
@@ -111,11 +112,60 @@ and multi (msg : string) (game : game) =
   match resp with
   | "h" -> multi multi_game_commands game
   | "q" -> print_endline "Goodbye!"
-  | _ -> (
+  | _ -> begin
       try
-        let updated_game = eval_move resp game in
-        multi default_main_msg updated_game
-      with Invalid_argument e -> multi (invalid_msg ^ "\nERROR: " ^ e) game)
+        if Board.is_board_filled (board_of_game game) then play (End game)
+        else
+          let updated_game = eval_move resp game in
+          multi default_main_msg updated_game
+      with
+      | Invalid_argument e -> multi (invalid_msg ^ "\nERROR: " ^ e) game
+      | End_game -> play (End game)
+    end
+
+and single (msg : string) (mode : difficulty) (game : game)
+    (is_human_player : bool) =
+  (* print the current game state *)
+  print_current_game game;
+  (* check who is playing the game *)
+  if is_human_player then begin
+    print_endline msg;
+    print_endline
+      ("VALID MOVES: "
+      ^ (Board.find_all_valid_moves (player_of_game game) (board_of_game game)
+        |> pp_list (fun (x, y) -> string_of_int x ^ " " ^ string_of_int y)));
+    print_string "> ";
+    let resp = read_line () |> String.trim |> String.lowercase_ascii in
+    match resp with
+    | "h" -> single multi_game_commands mode game is_human_player
+    | "q" -> print_string "Goodbye"
+    | _ -> (
+        try
+          single default_main_msg mode (eval_move resp game)
+            (not is_human_player)
+        with
+        | Invalid_argument e ->
+            single (invalid_msg ^ "\nERROR: " ^ e) mode game is_human_player
+        | End_game -> play (End game))
+  end
+  else begin
+    let generate_move =
+      match mode with
+      | Easy -> ComputerPlayer.generateMoveEasy
+      | Medium -> ComputerPlayer.generateMoveMedium
+      | Hard -> ComputerPlayer.generateMoveHard
+    in
+    let move =
+      generate_move
+        (Board.find_all_valid_moves (player_of_game game) (board_of_game game))
+        (board_of_game game) (player_of_game game)
+    in
+    try
+      single default_main_msg mode
+        (update (snd move) (fst move) game)
+        (not is_human_player)
+    with End_game -> play (End game)
+  end
 
 and play (state : state) =
   match state with
@@ -123,7 +173,16 @@ and play (state : state) =
   | Main (mode, game) -> (
       match mode with
       | Multi -> multi default_main_msg game
-      | Single difficulty -> failwith "U")
+      | Single difficulty -> (
+          print_endline single_choose_color;
+          print_string "> ";
+          let resp = read_line () |> String.trim |> String.lowercase_ascii in
+          match resp with
+          | "b" -> single default_main_msg difficulty game true
+          | "w" -> single default_main_msg difficulty game false
+          | _ ->
+              print_endline "Please choose a valid color!";
+              play (Main (Single difficulty, game))))
   | History game -> failwith "U"
   | End game -> failwith "U"
 

@@ -1,5 +1,7 @@
 open Board
 
+exception End_game
+
 type game_state = {
   board : board;
   move_num : int;
@@ -29,15 +31,26 @@ let player_of_game g =
   | [] -> failwith "Invalid input: game doesn't exist"
 
 (** Updates a game by placing a piece of the game's current color at (row, col)
-    in the game's board. Raises: invalid_argument if the move is invalid *)
+    in the game's board. Raises: invalid_argument if the move is invalid.
+    Raises: End_game if game cannot be updated *)
 let update (row : int) (col : int) (game : game) : game =
   match game with
-  | ({ board = b; move_num = n; player = p } as h) :: t ->
-      if is_legit b col row p then
-        let new_board = place_and_flip_pieces row col p b in
-        let new_player = if p = White then Black else White in
-        { board = new_board; move_num = n + 1; player = new_player } :: h :: t
-      else raise (Invalid_argument "Not a valid move")
+  | ({ board = b; move_num = n; player = p } as h) :: t -> begin
+      let new_player = if p = White then Black else White in
+      match
+        ( find_all_valid_moves p b |> List.length = 0,
+          find_all_valid_moves new_player b |> List.length = 0 )
+      with
+      | true, true -> raise End_game
+      | true, false ->
+          { board = b; move_num = n; player = new_player } :: h :: t
+      | _ ->
+          if is_legit b col row p then
+            let new_board = place_and_flip_pieces col row p b in
+            { board = new_board; move_num = n + 1; player = new_player }
+            :: h :: t
+          else raise (Invalid_argument "Not a valid move")
+    end
   | [] -> failwith "Invalid input: game doesn't exist"
 
 let print_curr_state (state : game_state) =
@@ -59,7 +72,7 @@ let print_previous_games (game : game) =
         print_curr_state h;
         print_prev_helper t;
         print_endline
-          "|<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>|"
+          "|<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>|"
     | [] -> print_newline ()
   in
   print_prev_helper (List.rev game)
