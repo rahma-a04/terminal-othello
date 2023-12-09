@@ -30,17 +30,18 @@ let rec to_list_small lst =
       if h = Empty then "Empty" :: to_list_small t
       else if h = Black then "Black" :: to_list_small t
       else "White" :: to_list_small t
-      let black_circle_code = "\u{1F535}"
-      let white_circle_code = "\u{26AA}"
-      
-      let rec to_list_small_unicode lst =
-        match lst with
-        | [] -> []
-        | h :: t ->
-            if h = Empty then "  " :: to_list_small_unicode t
-            else if h = Black then black_circle_code :: to_list_small_unicode t
-            else white_circle_code :: to_list_small_unicode t
-            
+
+let black_circle_code = "\u{1F535}"
+let white_circle_code = "\u{26AA}"
+
+let rec to_list_small_unicode lst =
+  match lst with
+  | [] -> []
+  | h :: t ->
+      if h = Empty then "  " :: to_list_small_unicode t
+      else if h = Black then black_circle_code :: to_list_small_unicode t
+      else white_circle_code :: to_list_small_unicode t
+
 let rec to_list board =
   match board with
   | [] -> []
@@ -158,12 +159,12 @@ let rec west curr_x curr_y board =
     | Empty -> []
     | _ -> (curr_x, curr_y) :: west (curr_x - 1) curr_y board
 
-let rec northwwest curr_x curr_y board =
+let rec northwest curr_x curr_y board =
   if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
   else
     match get_element curr_x curr_y board with
     | Empty -> []
-    | _ -> (curr_x, curr_y) :: northwwest (curr_x - 1) (curr_y + 1) board
+    | _ -> (curr_x, curr_y) :: northwest (curr_x - 1) (curr_y + 1) board
 
 let rec north curr_x curr_y board =
   if curr_x < 0 || curr_y < 0 || curr_x > 7 || curr_y > 7 then []
@@ -209,7 +210,7 @@ let is_legit board curr_x curr_y piece =
     || f (south curr_x (curr_y - 1) board)
     || f (southwest (curr_x - 1) (curr_y - 1) board)
     || f (west (curr_x - 1) curr_y board)
-    || f (northwwest (curr_x - 1) (curr_y + 1) board)
+    || f (northwest (curr_x - 1) (curr_y + 1) board)
     || f (north curr_x (curr_y + 1) board)
 
 let find_all_valid_moves color board =
@@ -227,41 +228,194 @@ let find_all_valid_moves color board =
   in
   find_moves 0 0 []
 
-let flip_in_direction board dir_func x y color =
-  let rec flip_sequence positions board =
-    match positions with
-    | [] -> board
-    | (px, py) :: rest -> (
-        match get_element px py board with
-        | piece when piece = color -> board
-        | _ -> flip_sequence rest (update_element px py color board))
-  in
-  flip_sequence (dir_func x y board) board
+(*let flip_in_direction board dir_func x y color = let positions = dir_func x y
+  board in let rec flip_sequence pos_list board = match pos_list with | [] ->
+  board | (px, py) :: rest -> ( match get_element px py board with | piece when
+  piece = color -> board | _ -> flip_sequence rest (update_element px py color
+  board)) in match positions with | (px, py) :: _ when get_element px py board =
+  color -> board | _ -> flip_sequence positions board
 
-let flip_pieces board x y color =
-  let directions =
-    [ northeast; east; southeast; south; southwest; west; northwwest; north ]
-  in
-  let should_flip dir_func =
+  let flip_pieces board x y color = let directions = [ northeast; east;
+  southeast; south; southwest; west; northwest; north ] in let should_flip
+  dir_func = match color with | Black -> can_black_play (List.map (fun (x, y) ->
+  get_element x y board) (dir_func (x + 1) (y + 1) board)) | White ->
+  can_white_play (List.map (fun (x, y) -> get_element x y board) (dir_func (x +
+  1) (y + 1) board)) | _ -> false in List.fold_left (fun acc_board dir_func ->
+  if should_flip dir_func then flip_in_direction acc_board dir_func (x + 1) (y +
+  1) color else acc_board) board directions*)
+
+(*let place_and_flip_pieces x y color board = let new_board = place_piece x y
+  color board in flip_pieces new_board x y color*)
+
+let rec northeastFlip curr_x curr_y color board =
+  let colorOpp =
     match color with
-    | Black ->
-        can_black_play
-          (List.map
-             (fun (x, y) -> get_element x y board)
-             (dir_func (x + 1) (y + 1) board))
-    | White ->
-        can_white_play
-          (List.map
-             (fun (x, y) -> get_element x y board)
-             (dir_func (x + 1) (y + 1) board))
-    | _ -> false
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
   in
-  List.fold_left
-    (fun acc_board dir_func ->
-      if should_flip dir_func then
-        flip_in_direction acc_board dir_func (x + 1) (y + 1) color
-      else acc_board)
-    board directions
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    northeastFlip (curr_x + 1) (curr_y + 1) color outBoard
 
-let place_and_flip_pieces x y color board =
-  flip_pieces (place_piece x y color board) x y color
+let rec eastFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    eastFlip (curr_x + 1) curr_y color outBoard
+
+let rec southeastFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    southeastFlip (curr_x + 1) (curr_y - 1) color outBoard
+
+let rec southFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    southFlip curr_x (curr_y - 1) color outBoard
+
+let rec southwestFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    southwestFlip (curr_x - 1) (curr_y - 1) color outBoard
+
+let rec westFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    westFlip (curr_x - 1) curr_y color outBoard
+
+let rec northwestFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    northwestFlip (curr_x - 1) (curr_y + 1) color outBoard
+
+let rec northFlip curr_x curr_y color board =
+  let colorOpp =
+    match color with
+    | Black -> White
+    | White -> Black
+    | Empty -> failwith "color must be defined"
+  in
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> colorOpp
+  then board
+  else
+    let outBoard = update_element curr_x curr_y color board in
+    northFlip curr_x (curr_y + 1) color outBoard
+
+let place_and_flip_pieces curr_x curr_y piece board =
+  if
+    curr_x > 7 || curr_y > 7 || curr_x < 0 || curr_y < 0
+    || get_element curr_x curr_y board <> Empty
+  then board
+  else
+    let f n =
+      (match piece with
+      | Black -> can_black_play
+      | White -> can_white_play
+      | Empty -> failwith "color required")
+        (List.map (fun (x, y) -> get_element x y board) n)
+    in
+    let board_with_piece = place_piece curr_x curr_y piece board in
+    let board1 =
+      if f (northeast (curr_x + 1) (curr_y + 1) board) then
+        northeastFlip (curr_x + 1) (curr_y + 1) piece board_with_piece
+      else board_with_piece
+    in
+    let board2 =
+      if f (east (curr_x + 1) curr_y board) then
+        eastFlip (curr_x + 1) curr_y piece board1
+      else board1
+    in
+    let board3 =
+      if f (southeast (curr_x + 1) (curr_y - 1) board) then
+        southeastFlip (curr_x + 1) (curr_y - 1) piece board2
+      else board2
+    in
+    let board4 =
+      if f (south curr_x (curr_y - 1) board) then
+        southFlip curr_x (curr_y - 1) piece board3
+      else board3
+    in
+    let board5 =
+      if f (southwest (curr_x - 1) (curr_y - 1) board) then
+        southwestFlip (curr_x - 1) (curr_y - 1) piece board4
+      else board4
+    in
+    let board6 =
+      if f (west (curr_x - 1) curr_y board) then
+        westFlip (curr_x - 1) curr_y piece board5
+      else board5
+    in
+    let board7 =
+      if f (northwest (curr_x - 1) (curr_y + 1) board) then
+        northwestFlip (curr_x - 1) (curr_y + 1) piece board6
+      else board6
+    in
+    if f (north curr_x (curr_y + 1) board) then
+      northFlip curr_x (curr_y + 1) piece board7
+    else board7

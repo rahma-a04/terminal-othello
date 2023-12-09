@@ -1030,6 +1030,10 @@ let board_tests =
       Board.place_piece 4 5 White board in let expected_moves = [ (3, 3); (5, 4)
       ] in assert_equal expected_moves (Board.find_all_valid_moves Black board)
       );*)
+    ( "place_and_flip_pieces true test" >:: fun _ ->
+      let board = Board.empty_board in
+      let board = Board.place_and_flip_pieces 4 2 Black board in
+      assert_equal Board.Black (Board.get_element 4 3 board) );
   ]
 
 let suite = "test suite for Othello" >::: List.flatten [ board_tests ]
