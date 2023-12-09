@@ -53,6 +53,7 @@ let computerResponseList =
     "Are you playing Othello or just arranging the pieces for modern art?";
     "Are you giving me a head start, or is this your actual strategy?";
     "Your moves are so weak, even the pieces are yawning.";
+    "I've heard of charity, but you are practically donating pieces";
     "I hope your day job doesn't involve decision-making.";
   ]
 
