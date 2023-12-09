@@ -60,19 +60,22 @@ let board_row (lst : string list) : unit =
   print_string "| ";
   print_list lst
 
-let rec print_list_of_lists = function
+let rec print_list_of_lists n = function
   | [] -> ()
   | h :: t ->
       board_row h;
+      print_string (string_of_int n);
       print_newline ();
       print_string "---------------------------------";
       print_newline ();
-      print_list_of_lists t
+      print_list_of_lists (n + 1) t
 
 let print_board_top (lst : string list list) : unit =
+  print_string "  A   B   C   D   E   F   G   H";
+  print_newline ();
   print_string "---------------------------------";
   print_newline ();
-  print_list_of_lists lst
+  print_list_of_lists 1 lst
 
 let print_board (board : piece list list) : unit =
   print_board_top (to_list board)
@@ -97,9 +100,6 @@ let get_element row col board =
     let selected_row = List.nth board row in
     List.nth selected_row col
   with Failure _ -> failwith "Invalid row or column index"
-
-(*let valid_move row col board = if row > 7 || col > 7 then false else if
-  get_element row col board = Empty then true else false*)
 
 let rec update_element row col value board =
   List.mapi

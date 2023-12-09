@@ -12,7 +12,8 @@ val to_list_small : piece list -> string list
 (** Converts a piece list to a string list. *)
 
 val print_board : board -> unit
-(** Prints the current board in utop, takes in a board. *)
+(** Prints the current board in utop with letters on top and numbers on the
+    side. Takes in a board. *)
 
 val count_number_of_objs_in_list : piece list -> piece -> int
 (** Counts the number of specific pieces in a list. *)
@@ -38,10 +39,6 @@ val to_piece_list : board -> piece list list
 
 val get_element : int -> int -> board -> piece
 (** Retrieves the element at a specified row and column from the board. *)
-
-(*val valid_move : int -> int -> piece list list -> bool (** Checks whether the
-  location has a piece on it already and whether it is out of scope of the
-  board. *) *)
 
 val place_piece : int -> int -> piece -> board -> board
 (** Places the piece in the desired location (x, y). *)
