@@ -1025,11 +1025,10 @@ let board_tests =
     ( "is_legit true test" >:: fun _ ->
       let board = Board.empty_board in
       assert_equal true (Board.is_legit board 4 2 Black) );
-    (*( "find_all_valid_moves test" >:: fun _ -> let board = Board.empty_board
-      in let board = Board.place_piece 3 2 Black board in let board =
-      Board.place_piece 4 5 White board in let expected_moves = [ (3, 3); (5, 4)
-      ] in assert_equal expected_moves (Board.find_all_valid_moves Black board)
-      );*)
+    ( "find_all_valid_moves test" >:: fun _ ->
+      let board = Board.empty_board in
+      let expected_moves = [ (5, 3); (4, 2); (3, 5); (2, 4) ] in
+      assert_equal expected_moves (Board.find_all_valid_moves Black board) );
     ( "place_and_flip_pieces true test" >:: fun _ ->
       let board = Board.empty_board in
       let board = Board.place_and_flip_pieces 4 2 Black board in
