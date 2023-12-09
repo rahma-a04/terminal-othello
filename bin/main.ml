@@ -5,6 +5,7 @@ type difficulty =
   | Easy
   | Medium
   | Hard
+  | Extreme
 
 type gamemode =
   | Single of difficulty
@@ -177,6 +178,7 @@ and single (msg : string) (mode : difficulty) (game : game)
       | Easy -> ComputerPlayer.generateMoveEasy
       | Medium -> ComputerPlayer.generateMoveMedium
       | Hard -> ComputerPlayer.generateMoveHard
+      | Extreme -> ComputerPlayer.generateMoveExtreme
     in
     let move =
       generate_move
