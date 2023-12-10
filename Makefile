@@ -11,3 +11,7 @@ test:
 
 opendoc: doc
 	@bash opendoc.sh	
+
+zip:
+	rm -f othello.zip
+	zip -r othello.zip . -x@exclude.lst
