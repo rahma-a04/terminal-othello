@@ -87,8 +87,8 @@ let eval_move (str : string) (game : game) =
 
 let init_msg =
   "Welcome to Othello!\n\
-   Type 's difficulty', with difficulty being easy, medium, hard, or godmode, \
-   for singleplayer, 'm' for multiplayer, 'q' to quit, and 'h' for help."
+   Type 's [easy | medium | hard | godmode]' for singleplayer, 'm' for \
+   multiplayer, 'q' to quit, and 'h' for help."
 
 let invalid_msg = "Invalid response! Type 'h' for valid commands"
 
@@ -104,11 +104,12 @@ let init_help_commands =
    'h': displays commands\n\
    'q': quits game"
 
-let multi_game_commands =
+let game_commands =
   "COMMANDS:\n\n\n\
   \  To enter a move, please type 'column row' (i.e. F 6)\n\n\
   \  'h': displays commands\n\n\
-  \  'q': quits game"
+  \  'q': quits game\n\n\
+  \  'hist': enters history mode"
 
 let default_main_msg = "Enter move (e.g. F 5)"
 let single_choose_color = "Choose 'b' to play as Black, 'w' to play as White"
@@ -142,7 +143,7 @@ and multi (msg : string) (game : game) =
   print_string "> ";
   let resp = read_line () |> String.trim |> String.lowercase_ascii in
   match resp with
-  | "h" -> multi multi_game_commands game
+  | "h" -> multi game_commands game
   | "q" -> print_endline "Goodbye!"
   | _ -> begin
       try
@@ -197,7 +198,7 @@ and single (msg : string) (mode : difficulty) (game : game)
         print_string "> ";
         let resp = read_line () |> String.trim |> String.lowercase_ascii in
         match resp with
-        | "h" -> single multi_game_commands mode game is_human_player
+        | "h" -> single game_commands mode game is_human_player
         | "q" -> print_string "Goodbye!"
         | _ -> (
             try
@@ -254,8 +255,14 @@ and end_game (game : game) =
     else "White"
   in
   print_endline
-    ("Game over!\nBlack score: " ^ string_of_int black_score ^ "\nWhite score: "
-   ^ string_of_int white_score ^ "\nWINNER: " ^ winner)
+    "\u{2554}\u{2550}.\u{2735}.\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2557}";
+  print_endline
+    ("      Game over!\n   Black score: " ^ string_of_int black_score
+   ^ "\n   White score: " ^ string_of_int white_score ^ "\n   WINNER: " ^ winner
+    );
+  print_endline "      Goodbye!";
+  print_endline
+    "\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}.\u{2735}.\u{2550}\u{255D}"
 
 and play (state : state) =
   match state with
