@@ -43,6 +43,6 @@ If you are playing in singleplayer, after you enter the first move, the computer
 will play its own move and you can enter your next move. 
 
 9. Type 'q' at any point to quit the game. Type 'h' at any point for the valid 
-commands. 
+commands. Type 'history' at any point in the game to enter history mode.
 
 10. When finished, run dune clean in terminal.
