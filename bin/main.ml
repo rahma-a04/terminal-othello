@@ -51,19 +51,19 @@ let letters_to_ints =
 
 (** The different outputs that the computer player can choose from to taunt the
     human player. *)
-let computerResponseList =
+let computer_response_list =
   [
-    "I'm coming for your job";
-    "You thought you ate :| ";
-    "I didn't know we were playing checkers. Oh wait, we're not!";
-    "Do you need a GPS to find a winning move?";
-    "I didn't realize we were playing hide-and-seek with your winning moves.";
-    "Are you trying to set a record for the longest losing streak?";
-    "Are you playing Othello or just arranging the pieces for modern art?";
-    "Are you giving me a head start, or is this your actual strategy?";
-    "Your moves are so weak, even the pieces are yawning.";
-    "I've heard of charity, but you are practically donating pieces";
-    "I hope your day job doesn't involve decision-making.";
+    "\nI'm coming for your job";
+    "\nYou thought you ate :| ";
+    "\nI didn't know we were playing checkers. Oh wait, we're not!";
+    "\nDo you need a GPS to find a winning move?";
+    "\nI didn't realize we were playing hide-and-seek with your winning moves.";
+    "\nAre you trying to set a record for the longest losing streak?";
+    "\nAre you playing Othello or just arranging the pieces for modern art?";
+    "\nAre you giving me a head start, or is this your actual strategy?";
+    "\nYour moves are so weak, even the pieces are yawning.";
+    "\nI've heard of charity, but you are practically donating pieces";
+    "\nI hope your day job doesn't involve decision-making.";
   ]
 
 (** Mapping from ints to letters. *)
@@ -339,8 +339,8 @@ and single (msg : string) (mode : difficulty) (game : game)
             history history_welcome_msg game (Single mode) human_player
         | _ -> (
             try
-              let pos = Random.int (List.length computerResponseList) in
-              print_endline (List.nth computerResponseList pos);
+              let pos = Random.int (List.length computer_response_list) in
+              print_endline (List.nth computer_response_list pos);
               if Board.is_board_filled (board_of_game game) then play (End game)
               else
                 single default_main_msg mode (eval_move resp game) human_player
