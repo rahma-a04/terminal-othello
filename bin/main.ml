@@ -399,8 +399,14 @@ and end_game (game : game) =
     ("     Game over!\n   Black score: " ^ string_of_int black_score
    ^ "\n   White score: " ^ string_of_int white_score ^ "\n   WINNER: " ^ winner
    ^ "\u{1F947}");
-  print_endline "      Goodbye!";
-  print_endline closing_bottom
+  print_endline closing_bottom;
+  print_newline ();
+  print_endline "Play again? Type 'y' for yes, anything else to quit!";
+  print_string "> ";
+  let resp = read_line () |> String.trim |> String.lowercase_ascii in
+  match resp with
+  | "y" -> play Initialize
+  | _ -> print_endline "Goodbye!"
 
 (** Handles game state and function calls for different game states. *)
 and play (state : state) =
