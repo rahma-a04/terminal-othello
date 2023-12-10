@@ -1,6 +1,7 @@
-open Board
 (** The User Interface module that provides functionality for certain user
     inputs. *)
+
+open Board
 
 exception End_game
 (** Exception for when a game is over. *)
