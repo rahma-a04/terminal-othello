@@ -3,19 +3,19 @@ Instructions to build system and play game:
 1. Download the zip file. Create a working directory for this project. 
 
 Linux/Mac: Move the zip file into your work directory. Once you have the zip 
-file in your directory, just run <unzip cs3110-final-project>
+file in your directory, just run <unzip othello.zip>
 
 Windows: 
     - move your zip file in the downloads folder in your c drive, with the name
-      <cs3110-final-project.zip> 
+      <othello.zip> 
     - open ubuntu
     - next, use cd to naviagate to the working directory you created for this 
       project 
     - next, run 
-    <cp /mnt/c/Users/"your Windows user name"/Downloads/cs3110-final-project.zip .>
-    - from your work directory, run <unzip cs3110-final-project.zip>
+    <cp /mnt/c/Users/"your Windows user name"/Downloads/othello.zip .>
+    - from your work directory, run <unzip othello.zip>
 
-2. Run <cd cs3110-final-project>
+2. Run <cd othello>
 
 3. In the terminal run dune build in the project directory
 
