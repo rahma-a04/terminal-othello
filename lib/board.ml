@@ -1,4 +1,4 @@
-(** creates the board of Othello, and provide a function that prints it out in
+(** Creates the board of Othello, and provide a function that prints it out in
     terminal. *)
 
 type piece =
@@ -8,6 +8,7 @@ type piece =
 
 type board = piece list list
 
+(** The starting position of Othello. *)
 let empty_board =
   [
     [ Empty; Empty; Empty; Empty; Empty; Empty; Empty; Empty ];
@@ -32,20 +33,14 @@ let rec to_list_small lst =
       else if h = Black then black_circle_code :: to_list_small t
       else white_circle_code :: to_list_small t
 
-(* let rec to_list_small_unicode lst = match lst with | [] -> [] | h :: t -> if
-   h = Empty then " " :: to_list_small_unicode t else if h = Black then
-   black_circle_code :: to_list_small_unicode t else white_circle_code ::
-   to_list_small_unicode t *)
-
 let rec to_list board =
   match board with
   | [] -> []
   | h :: t -> to_list_small h :: to_list t
 
 let to_piece_list board = board
-(* let rec to_list_unicode board = match board with | [] -> [] | h :: t ->
-   to_list_small_unicode h :: to_list_unicode t *)
 
+(** Prints a single list with "|" in between each element. *)
 let rec print_list = function
   | [] -> ()
   | h :: t ->
@@ -53,10 +48,12 @@ let rec print_list = function
       print_string " | ";
       print_list t
 
+(** Prints the first "|" of the board. *)
 let board_row (lst : string list) : unit =
   print_string "| ";
   print_list lst
 
+(** Prints a list of lists with a line in between each. *)
 let rec print_list_of_lists n = function
   | [] -> ()
   | h :: t ->
@@ -67,6 +64,7 @@ let rec print_list_of_lists n = function
       print_newline ();
       print_list_of_lists (n + 1) t
 
+(** Prints the top of the board, including letter labels. *)
 let print_board_top (lst : string list list) : unit =
   print_string "  A   B   C   D   E   F   G   H";
   print_newline ();
@@ -98,6 +96,7 @@ let get_element row col board =
     List.nth selected_row col
   with Failure _ -> failwith "Invalid row or column index"
 
+(** Updates the spot with an element. *)
 let rec update_element row col value board =
   List.mapi
     (fun i r ->

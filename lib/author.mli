@@ -6,12 +6,10 @@
    or use it for commercial purposes.
  ************************************************************)
 
-(** Othello
+(** This game of othello was created by: 
 
-    @author Mary Yuan (cy452)
-    @author Arthi Vijayakumar (av439)
-    @author Om Deshmukh (od66)
-    @author Rahma Abdullah (ra567) *)
+    @author Mary Yuan (cy452), Arthi Vijayakumar (av439), Om Deshmukh (od66), 
+    Rahma Abdullah (ra567) *)
 
 val hours_worked : int
 (** [hours_worked] is the number of hours we worked on this game. *)

@@ -1,16 +1,27 @@
+(** Creates the board of Othello, and provide a function that prints it out in
+    terminal. *)
+
+(** A piece is the possible pieces that can occupy any spot on the 8 x 8 othello
+    board. *)
 type piece =
   | Black
   | White
   | Empty
 
-type board = piece list list
-
 val black_circle_code : string
+(** Unicode for a black circle. *)
+
 val white_circle_code : string
+(** Unicode for a white circle. *)
+
 val empty_code : string
+(** Empty space. *)
+
+type board = piece list list
+(** A board is a list of lists of pieces that represents the othello board. *)
 
 val empty_board : board
-(** The empty Othello board. *)
+(** The starting position of an Othello board. *)
 
 val to_list_small : piece list -> string list
 (** Converts a piece list to a string list. *)
@@ -35,9 +46,6 @@ val to_list : board -> string list list
     with "Empty", Black corresponding with "Black", and White corresponding with
     "White". *)
 
-(* val to_list_small_unicode : piece list -> string list val to_list_unicode :
-   board -> string list list *)
-
 val to_piece_list : board -> piece list list
 (** Converts a board into a list of Piece lists *)
 
@@ -48,7 +56,7 @@ val place_piece : int -> int -> piece -> board -> board
 (** Places the piece in the desired location (x, y). *)
 
 val is_legit : board -> int -> int -> piece -> bool
-(** Checks to see if move is legal based on rules of othello*)
+(** Checks to see if move is legal based on rules of othello. *)
 
 val find_all_valid_moves : piece -> board -> (int * int) list
 (** Finds all valid moves for a given piece on the board. *)
