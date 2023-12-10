@@ -2,12 +2,12 @@
 
 A terminal-based version of the board game Othello, created for our CS 3110 final project.
 
-## Authors
+Authors:
 
-Arthi Vijayakumar (av439)
-Rahma Abdullah (ra567)
-Mary Yuan (cy452)
-Om Deshmukh (od66)
+- Rahma Abdullah (ra567)
+- Om Deshmukh (od66)
+- Arthi Vijayakumar (av439)
+- Mary Yuan (cy452)
 
 ## Setup
 
