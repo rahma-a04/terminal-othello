@@ -333,7 +333,7 @@ and single (msg : string) (mode : difficulty) (game : game)
         try
           print_endline
             ("Computer move: "
-            ^ string_of_int (fst move)
+            ^ List.assoc (fst move) ints_to_letters
             ^ " "
             ^ string_of_int (snd move));
           print_endline
