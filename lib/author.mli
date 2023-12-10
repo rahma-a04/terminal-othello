@@ -6,7 +6,7 @@
    or use it for commercial purposes.
  ************************************************************)
 
-(** This game of othello was created by:
+(** The authors of Othello.
 
     @author Mary Yuan (cy452)
     @author Arthi Vijayakumar (av439)
