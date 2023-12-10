@@ -1,3 +1,4 @@
+(** Randomly selects possible move from all possible moves *)
 let rec generateMoveHelper (valid_moves : (int * int) list) (v : int)
     (currentNum : int) : int * int =
   match valid_moves with
@@ -6,6 +7,7 @@ let rec generateMoveHelper (valid_moves : (int * int) list) (v : int)
       else (x, y)
   | [] -> raise (Invalid_argument "no more moves :(")
 
+(** Uses generateMoveHelper to select a random move out of all possible moves *)
 let generateMoveEasy (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   if List.length valid_moves = 0 then
@@ -14,11 +16,14 @@ let generateMoveEasy (valid_moves : (int * int) list) (board : Board.board)
     let movePos = Random.int (List.length valid_moves) in
     generateMoveHelper valid_moves movePos 0
 
+(**Counts the number of pieces flipped*)
 let count_flipped_pieces original_board new_board color =
   let original_count = Board.count_pieces original_board color in
   let new_count = Board.count_pieces new_board color in
   new_count - original_count
 
+(** Selects the move that captures the most number of pieces out of out of all
+    possible moves *)
 let generateMoveMedium (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   (*let valid_moves = Board.find_all_valid_moves color board in*)
@@ -33,6 +38,9 @@ let generateMoveMedium (valid_moves : (int * int) list) (board : Board.board)
   | [] -> raise (Invalid_argument "no more moves :(")
   | (_, best_move) :: _ -> best_move
 
+(** Evaluates the weight of a specific move (x, y) based on a predefined weight
+    matrix. This function returns the weight score of the move for a given
+    color. *)
 let evaluate_move (x, y) color =
   let weight_matrix =
     [|
@@ -48,6 +56,9 @@ let evaluate_move (x, y) color =
   in
   weight_matrix.(x).(y)
 
+(** Selects the best move based on preset weight matrix, and if a tie occurs,
+    the algorithm takes preference to the move that captures the most number of
+    pieces *)
 let generateMoveHard (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   let simulate_move (x, y) =
@@ -65,6 +76,12 @@ let generateMoveHard (valid_moves : (int * int) list) (board : Board.board)
   | [] -> raise (Invalid_argument "no more moves :(")
   | (_, _, best_move) :: _ -> best_move
 
+(** Evaluates the move (x, y) for the godmode, combining the static weight
+    matrix evaluation with dynamic game factors. It considers both the move's
+    strategic importance and the number of opponent pieces that would be
+    flipped. Additional consideration is given for controlling edges and
+    corners. Returns a tuple of the move's weight and the count of flipped
+    pieces. *)
 let evaluate_move_extreme (x, y) color board =
   let weight_matrix =
     [|
@@ -93,7 +110,12 @@ let evaluate_move_extreme (x, y) color board =
   in
   (move_weight + additional_edge_bonus, flipped_count)
 
-(** Generate move for god mode AI using Minimax w/ Alpha-Beta Pruning *)
+(** Implements the Minimax algorithm with Alpha-Beta pruning to optimize the
+    AI's move selection. It evaluates moves recursively up to a given depth,
+    pruning branches that don't need to be explored. The function takes the
+    current board, search depth, alpha, beta, current player's color, and a
+    boolean indicating if the current player is maximizing or minimizing. It
+    returns the best move found at that depth. *)
 let rec alpha_beta_prune board depth alpha beta color maximizingPlayer =
   if depth = 0 || Board.is_board_filled board then
     evaluate_move_extreme (-1, -1) color board
@@ -125,6 +147,9 @@ let rec alpha_beta_prune board depth alpha beta color maximizingPlayer =
         valid_moves;
       !best_move
 
+(** Generates a move for the extreme AI level. This function applies the
+    alpha-beta pruning algorithm & evaluate move extreme to evaluate moves
+    several steps ahead, *)
 let generateMoveExtreme (valid_moves : (int * int) list) board color =
   let depth = 5 (* Adjust depth for difficulty *) in
   let x, y =
