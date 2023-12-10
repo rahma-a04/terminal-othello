@@ -23,8 +23,12 @@ git-repo: https://github.coecis.cornell.edu/ra567/cs3110-final-project
 demo-video-url: ""
 # Write a short, attention-grabbing description of your project.
 desc: >
-  Our project is a single-computer multiplayer version of the game Othello.
-  Players can input moves and try to strategically place their pieces so that
-  they finish the game with the most pieces on the board.
-  
-  The program currently supports basic terminal I/O, but a GUI is in the works!
+  Our project is a single-computer terminal version of the game Othello.
+  Players can input moves into the terminal and try to strategically 
+  place their pieces so that they finish the game with the most pieces on the 
+  board.
+
+  The game supports multiplayer and singleplayer functionality. A singleplayer 
+  game can be played against an easy, medium, hard, or extreme AI opponent. 
+  The game also supports an in-game 'history' mode which allows you to 
+  revert to a specific point in your game history.
