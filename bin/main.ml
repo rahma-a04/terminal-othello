@@ -354,7 +354,6 @@ and single (msg : string) (mode : difficulty) (game : game)
   end
   else begin
     print_newline ();
-    print_endline msg;
     let valid_moves_list =
       Board.find_all_valid_moves (player_of_game game) (board_of_game game)
     in
@@ -374,6 +373,8 @@ and single (msg : string) (mode : difficulty) (game : game)
             (board_of_game game) (player_of_game game)
         in
         try
+          print_newline ();
+          print_endline msg;
           print_endline
             ("Computer move: "
             ^ List.assoc (fst move) ints_to_letters
