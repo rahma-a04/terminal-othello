@@ -1,22 +1,28 @@
 open Othello
 open Ui
 
+(** Type [difficulty] represents the different difficulties of the computer
+    player. *)
 type difficulty =
   | Easy
   | Medium
   | Hard
   | Extreme
 
+(** Type [gamemode] represetns the different game modes: singleplayer and
+    multiplayer. *)
 type gamemode =
   | Single of difficulty
   | Multi
 
+(** Type [state] represents the different game states. *)
 type state =
   | Initialize
   | Main of (gamemode * game)
   | History of game
   | End of game
 
+(** Pretty printer for a list. *)
 let pp_list pp_elt lst =
   let pp_elts lst =
     let rec loop n acc = function
@@ -30,6 +36,7 @@ let pp_list pp_elt lst =
   in
   "[" ^ pp_elts lst ^ "]"
 
+(** Mapping of letters to integers. *)
 let letters_to_ints =
   [
     ("a", 0);
@@ -42,6 +49,8 @@ let letters_to_ints =
     ("h", 7);
   ]
 
+(** The different outputs that the computer player can choose from to taunt the
+    human player. *)
 let computerResponseList =
   [
     "I'm coming for your job";
@@ -57,6 +66,7 @@ let computerResponseList =
     "I hope your day job doesn't involve decision-making.";
   ]
 
+(** Mapping from ints to letters. *)
 let ints_to_letters =
   [
     (0, "a");
@@ -69,13 +79,16 @@ let ints_to_letters =
     (7, "h");
   ]
 
+(** Initial message that prints when the user starts the game. *)
 let init_msg =
   "Welcome to Othello!\n\
    Type 's [easy | medium | hard | godmode]' for singleplayer, 'm' for \
    multiplayer, 'q' to quit, and 'h' for help."
 
+(** Message for an invalid response. *)
 let invalid_msg = "Invalid response! Type 'h' for valid commands"
 
+(** Commands that print out when the player types h for help. *)
 let init_help_commands =
   "COMMANDS:\n\n\
    \'s easy': enters a singleplayer game against an easy difficulty AI opponent\n\
@@ -88,23 +101,30 @@ let init_help_commands =
    'h': displays commands\n\
    'q': quits game"
 
+(** Commands to instruct the player on how to play. *)
 let game_commands =
   "COMMANDS:\n\n\n\
   \  To enter a move, please type 'column row' (i.e. F 6)\n\n\
   \  'h': displays commands\n\n\
   \  'q': quits game\n\n\
-  \  'history': enters history mode"
+  \  'history': enters history mode, can be typed at any point during a game."
 
+(** The default main message. *)
 let default_main_msg = "Enter move (e.g. F 5). Type 'h' for valid commands."
+
+(** The message that lets players choose the color. *)
 let single_choose_color = "Choose 'b' to play as Black, 'w' to play as White"
 
+(** Welcoming message for history mode. *)
 let history_welcome_msg =
   "Welcome to history mode! To view all past moves in this game and select a \
    move to return to, type 'show'. Type 'exit' to return to the current state \
    of the game."
 
+(** Message to select a move number to return to in history mode. *)
 let history_selector_msg = "Type a move number to return to (e.g. '2')."
 
+(** Messages to help players in history mode. (version b) *)
 let history_help_msg_a =
   "COMMANDS:\n\n\n\
   \ 'show': shows current game's history and allows you to select a state to \
@@ -113,6 +133,7 @@ let history_help_msg_a =
   \ 'h': displays commands\n\n\
   \ 'q': quits othello"
 
+(** Messages to help players in history mode. (version b) *)
 let history_help_msg_b =
   "COMMANDS:\n\n\n\
   \ Type the move # of a point in the printed history to return to that point \
@@ -122,6 +143,7 @@ let history_help_msg_b =
   \ 'h': displays commands\n\n\
   \ 'q': quits othello"
 
+(** Message for player to show the moves in history mode. *)
 let history_show_msg =
   "Please select a move number in your current game to return to (e.g. '2').\n\
   \  \n\
@@ -400,4 +422,5 @@ and play (state : state) =
   | History game -> failwith "Something went wrong"
   | End game -> end_game game
 
+(** Runs the game. *)
 let () = play Initialize
