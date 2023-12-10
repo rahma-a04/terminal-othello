@@ -130,15 +130,23 @@ let history_show_msg =
    Type 'h' for help, 'exit' to return to your current game, and 'q' to quit \
    Othello."
 
+(** Closing message top border. *)
 let closing_top =
   "\u{2554}\u{2550}.\u{2735}.\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2557}"
 
+(** Closing message bottom border. *)
 let closing_bottom =
   "\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}.\u{2735}.\u{2550}\u{255D}"
 
+(** Helper for determining whether a string is an integer. Returns
+    [(true, int_of_string s)] if the string is an integer, and [(false, -1)] if
+    the string is not an integer. *)
 let is_string_int (s : string) =
   try (true, int_of_string s) with Failure _ -> (false, -1)
 
+(** Evaluates player move input for the main game. Raises: Invalid_argument if
+    the string cannot be parsed as a move in '[letter] [number]' format or if
+    the string does not represent a valid Othello move.*)
 let eval_move (str : string) (game : game) =
   match
     str |> String.trim |> String.lowercase_ascii |> String.split_on_char ' '
@@ -155,6 +163,8 @@ let eval_move (str : string) (game : game) =
     end
   | _ -> raise (Invalid_argument "Could not parse input")
 
+(** Handles game initialization. Allows player to input a game mode or other
+    relevant commands to start the game. *)
 let rec initialize (msg : string) =
   print_endline msg;
   print_string "> ";
@@ -173,6 +183,8 @@ let rec initialize (msg : string) =
   | [ "h" ] -> initialize init_help_commands
   | _ -> initialize invalid_msg
 
+(** Helper loop for history mode. Allows player to revert to a specific point in
+    the history. *)
 and history_show (msg : string) (game : game) (gamemode : gamemode)
     (human_player : Board.piece) (print_games : bool) =
   if print_games then (
@@ -209,6 +221,9 @@ and history_show (msg : string) (game : game) (gamemode : gamemode)
       | false, _ -> history_show invalid_msg game gamemode human_player false
     end
 
+(** Game loop for the history game mode. Allows player to input commands to show
+    game history, revert to a specific move number in the game, or continue
+    playing from where history mode was entered. *)
 and history (msg : string) (game : game) (gamemode : gamemode)
     (human_player : Board.piece) =
   print_newline ();
@@ -226,6 +241,7 @@ and history (msg : string) (game : game) (gamemode : gamemode)
   | "h" -> history history_help_msg_a game gamemode human_player
   | _ -> history invalid_msg game gamemode human_player
 
+(** Game loop for a multiplayer game. *)
 and multi (msg : string) (game : game) =
   print_newline ();
   print_current_game game;
@@ -252,7 +268,7 @@ and multi (msg : string) (game : game) =
       | End_game -> play (End game)
     end
 
-(* Computer player logic called by main *)
+(** Game loop for a singleplayer game. *)
 and single (msg : string) (mode : difficulty) (game : game)
     (human_player : Board.piece) =
   (* print the current game state *)
@@ -344,6 +360,8 @@ and single (msg : string) (mode : difficulty) (game : game)
         with End_game -> play (End game))
   end
 
+(** Ends the game by computing the winner of the current game according to the
+    number of pieces each player has on the board and printing relevant output. *)
 and end_game (game : game) =
   let board = board_of_game game in
   let black_score = Board.count_pieces board Board.Black in
@@ -362,6 +380,7 @@ and end_game (game : game) =
   print_endline "      Goodbye!";
   print_endline closing_bottom
 
+(** Handles game state and function calls for different game states. *)
 and play (state : state) =
   match state with
   | Initialize -> initialize init_msg

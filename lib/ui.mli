@@ -1,6 +1,7 @@
 open Board
 
 exception End_game
+(** Exception for when a game is over. *)
 
 type game_state
 (** Type representing a single snapshot of the game at any given point in time.
@@ -15,8 +16,13 @@ val new_game : game
 (** Initializes a new game of Othello. *)
 
 val board_of_game : game -> board
+(** Returns the [Board.board] value associated with [game] *)
+
 val player_of_game : game -> piece
+(** Returns the [Board.piece] value of the current player of [game] *)
+
 val skip_turn : game -> game
+(** Skips the turn of the player currently playing [game]. *)
 
 val update : int -> int -> game -> game
 (** [update player row col game] is the game after [player] has placed a new

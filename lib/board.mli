@@ -6,19 +6,20 @@
 type piece =
   | Black
   | White
-  | Empty
-
-val black_circle_code : string
-(** Unicode for a black circle. *)
-
-val white_circle_code : string
-(** Unicode for a white circle. *)
-
-val empty_code : string
-(** Empty space. *)
+  | Empty  (** The type of a single piece on the Othello board.*)
 
 type board = piece list list
-(** A board is a list of lists of pieces that represents the othello board. *)
+(** The type of a board of Othello. Represents all pieces placed on their
+    respective positions. *)
+
+val black_circle_code : string
+(** Unicode value for a black circle character. *)
+
+val white_circle_code : string
+(** Unicode value for a white circle character. *)
+
+val empty_code : string
+(** String representation of our empty pieces. *)
 
 val empty_board : board
 (** The starting position of an Othello board. *)
