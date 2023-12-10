@@ -9,7 +9,7 @@ type difficulty =
   | Hard
   | Extreme
 
-(** Type [gamemode] represetns the different game modes: singleplayer and
+(** Type [gamemode] represents the different game modes: singleplayer and
     multiplayer. *)
 type gamemode =
   | Single of difficulty
