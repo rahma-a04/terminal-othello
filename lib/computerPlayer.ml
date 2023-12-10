@@ -1,20 +1,20 @@
 (** Randomly selects possible move from all possible moves *)
-let rec generateMoveHelper (valid_moves : (int * int) list) (v : int)
+let rec generate_move_helper (valid_moves : (int * int) list) (v : int)
     (currentNum : int) : int * int =
   match valid_moves with
   | (x, y) :: tail ->
-      if currentNum <> v then generateMoveHelper tail v (currentNum + 1)
+      if currentNum <> v then generate_move_helper tail v (currentNum + 1)
       else (x, y)
   | [] -> raise (Invalid_argument "no more moves :(")
 
 (** Uses generateMoveHelper to select a random move out of all possible moves *)
-let generateMoveEasy (valid_moves : (int * int) list) (board : Board.board)
+let generate_move_easy (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   if List.length valid_moves = 0 then
     raise (Invalid_argument "error, possible move list is 0")
   else
     let movePos = Random.int (List.length valid_moves) in
-    generateMoveHelper valid_moves movePos 0
+    generate_move_helper valid_moves movePos 0
 
 (**Counts the number of pieces flipped*)
 let count_flipped_pieces original_board new_board color =
@@ -24,7 +24,7 @@ let count_flipped_pieces original_board new_board color =
 
 (** Selects the move that captures the most number of pieces out of out of all
     possible moves *)
-let generateMoveMedium (valid_moves : (int * int) list) (board : Board.board)
+let generate_move_medium (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   (*let valid_moves = Board.find_all_valid_moves color board in*)
   let simulate_move (x, y) =
@@ -59,7 +59,7 @@ let evaluate_move (x, y) color =
 (** Selects the best move based on preset weight matrix, and if a tie occurs,
     the algorithm takes preference to the move that captures the most number of
     pieces *)
-let generateMoveHard (valid_moves : (int * int) list) (board : Board.board)
+let generate_move_hard (valid_moves : (int * int) list) (board : Board.board)
     (color : Board.piece) : int * int =
   let simulate_move (x, y) =
     let move_score = evaluate_move (x, y) color in
@@ -150,7 +150,7 @@ let rec alpha_beta_prune board depth alpha beta color maximizingPlayer =
 (** Generates a move for the extreme AI level. This function applies the
     alpha-beta pruning algorithm & evaluate move extreme to evaluate moves
     several steps ahead, *)
-let generateMoveExtreme (valid_moves : (int * int) list) board color =
+let generate_move_extreme (valid_moves : (int * int) list) board color =
   let depth = 5 (* Adjust depth for difficulty *) in
   let x, y =
     alpha_beta_prune board depth (ref Int.min_int) (ref Int.max_int) color true

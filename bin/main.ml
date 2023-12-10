@@ -299,10 +299,10 @@ and single (msg : string) (mode : difficulty) (game : game)
   (* check who is playing the game *)
   let generate_move =
     match mode with
-    | Easy -> ComputerPlayer.generateMoveEasy
-    | Medium -> ComputerPlayer.generateMoveMedium
-    | Hard -> ComputerPlayer.generateMoveHard
-    | Extreme -> ComputerPlayer.generateMoveExtreme
+    | Easy -> ComputerPlayer.generate_move_easy
+    | Medium -> ComputerPlayer.generate_move_medium
+    | Hard -> ComputerPlayer.generate_move_hard
+    | Extreme -> ComputerPlayer.generate_move_extreme
   in
   let otherPlayer =
     match player_of_game game with
@@ -387,7 +387,6 @@ and single (msg : string) (mode : difficulty) (game : game)
 and end_game (game : game) =
   let board = board_of_game game in
   let black_score = Board.count_pieces board Board.Black in
-  (*todo: it would prob be better to return a tuple in count_pieces*)
   let white_score = Board.count_pieces board Board.White in
   let winner =
     if black_score > white_score then "Black "
