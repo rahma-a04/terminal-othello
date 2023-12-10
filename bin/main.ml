@@ -373,7 +373,6 @@ and single (msg : string) (mode : difficulty) (game : game)
             (board_of_game game) (player_of_game game)
         in
         try
-          print_newline ();
           print_endline msg;
           print_endline
             ("Computer move: "
