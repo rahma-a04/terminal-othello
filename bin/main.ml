@@ -340,19 +340,21 @@ and single (msg : string) (mode : difficulty) (game : game)
         | _ -> (
             try
               let pos = Random.int (List.length computer_response_list) in
-              print_endline
-                ("Computer: "
+              let cmp_msg =
+                "Computer: "
                 ^ List.nth computer_response_list pos
-                ^ " \nHere is my move...");
+                ^ " \nHere is my move..."
+              in
               if Board.is_board_filled (board_of_game game) then play (End game)
-              else
-                single default_main_msg mode (eval_move resp game) human_player
+              else single cmp_msg mode (eval_move resp game) human_player
             with
             | Invalid_argument e ->
                 single (invalid_msg ^ "\nERROR: " ^ e) mode game human_player
             | End_game -> play (End game)))
   end
   else begin
+    print_newline ();
+    print_endline msg;
     let valid_moves_list =
       Board.find_all_valid_moves (player_of_game game) (board_of_game game)
     in
