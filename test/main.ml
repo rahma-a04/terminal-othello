@@ -14,7 +14,7 @@
    functionality in terminal and utop. We used black box testing, as we were
    just observing the behaviors of the computer players under all possible
    inputs. This ensures that a typical person would be able to play the game
-   without bugs. We played over 50 games to fully test our functionality in
+   without bugs. We played over 100 games to fully test our functionality in
    bin/main and ui.mli.
 
    In total, we used a combination of glass-box and black-box testing to ensure

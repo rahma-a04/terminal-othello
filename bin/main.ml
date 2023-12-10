@@ -296,7 +296,7 @@ and single (msg : string) (mode : difficulty) (game : game)
         let resp = read_line () |> String.trim |> String.lowercase_ascii in
         match resp with
         | "h" -> single game_commands mode game human_player
-        | "q" -> print_string "Goodbye!"
+        | "q" -> print_endline "Goodbye!"
         | "history" ->
             history history_welcome_msg game (Single mode) human_player
         | _ -> (
@@ -350,15 +350,15 @@ and end_game (game : game) =
   (*todo: it would prob be better to return a tuple in count_pieces*)
   let white_score = Board.count_pieces board Board.White in
   let winner =
-    if black_score > white_score then "Black"
-    else if black_score = white_score then "Tie!"
-    else "White"
+    if black_score > white_score then "Black "
+    else if black_score = white_score then "Tie! "
+    else "White "
   in
   print_endline closing_top;
   print_endline
     ("     Game over!\n   Black score: " ^ string_of_int black_score
    ^ "\n   White score: " ^ string_of_int white_score ^ "\n   WINNER: " ^ winner
-    );
+   ^ "\u{1F947}");
   print_endline "      Goodbye!";
   print_endline closing_bottom
 
@@ -380,12 +380,5 @@ and play (state : state) =
               play (Main (Single difficulty, game))))
   | History game -> failwith "Something went wrong"
   | End game -> end_game game
-
-(* parse input for move multiplayer: check if move is valid -> if yes, place
-   piece and update board -> if no, retry for move singleplayer: check if move
-   is valid -> if yes, place piece and update board -> pass to AI -> place AI
-   piece and update board for history: print history -> switch to a new game
-   mode -> check if represents a valid location in history for help: print help
-   commands*)
 
 let () = play Initialize
