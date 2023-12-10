@@ -23,6 +23,10 @@ val update : int -> int -> game -> game
     piece in the given [row] and [col]. Requires: [(row, col)] is a valid
     location to place a piece. *)
 
+val revert : game -> int -> game
+(** [revert game n] reverts [game] to the nth move. Raises: Failure if n is
+    outside the game's move range *)
+
 val print_current_game : game -> unit
 (** [print_current_game game] prints the latest state of the game, including the
     player whose turn it is, the number of completed moves, and the current

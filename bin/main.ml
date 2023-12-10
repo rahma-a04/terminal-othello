@@ -69,22 +69,6 @@ let ints_to_letters =
     (7, "h");
   ]
 
-let eval_move (str : string) (game : game) =
-  match
-    str |> String.trim |> String.lowercase_ascii |> String.split_on_char ' '
-    |> List.filter (fun s -> s <> "")
-  with
-  | [ col_letter; row_one ] -> begin
-      try
-        update
-          (int_of_string row_one - 1) (*could fail with Failure*)
-          (List.assoc col_letter letters_to_ints) (*could fail with Not_found*)
-          game
-      with Not_found | Failure _ ->
-        raise (Invalid_argument "Could not parse input")
-    end
-  | _ -> raise (Invalid_argument "Could not parse input")
-
 let init_msg =
   "Welcome to Othello!\n\
    Type 's [easy | medium | hard | godmode]' for singleplayer, 'm' for \
@@ -114,6 +98,62 @@ let game_commands =
 let default_main_msg = "Enter move (e.g. F 5)"
 let single_choose_color = "Choose 'b' to play as Black, 'w' to play as White"
 
+let history_welcome_msg =
+  "Welcome to history mode! To view all past moves in this game, type 'show'. \
+   You may select a move number to return to that state in the game, or type \
+   'exit' to return to the current state of the game."
+
+let history_selector_msg = "Type a move number to return to (e.g. '2')."
+
+let history_help_msg_a =
+  "COMMANDS:\n\n\n\
+  \  'show': shows current game's history and allows you to select a state to \
+   return to\n\n\
+  \ 'exit': exits history mode\n\n\
+  \ 'h': displays commands\n\n\
+  \ 'q': quits othello"
+
+let history_help_msg_b =
+  "COMMANDS:\n\n\n\
+  \  Type the move # of a point in the printed history to return to that point \
+   in the game!\n\
+  \ (e.g. '2' will take you back to [MOVE NUMBER: 2])\n\
+  \ 'exit': exits history mode\n\n\
+  \ 'h': displays commands\n\n\
+  \ 'q': quits othello"
+
+let history_show_msg =
+  "Please select a move number in your current game to return to (e.g. '2').\n\
+  \  \n\
+   WARNING: Once selected, you will not be able to restore any progress after \
+   that point! \nType 'h' for help, 'exit' to return to your current game, and \
+   'q' to quit Othello."
+
+let closing_top =
+  "\u{2554}\u{2550}.\u{2735}.\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2557}"
+
+let closing_bottom =
+  "\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}.\u{2735}.\u{2550}\u{255D}"
+
+let is_string_int (s : string) =
+  try (true, int_of_string s) with Failure _ -> (false, -1)
+
+let eval_move (str : string) (game : game) =
+  match
+    str |> String.trim |> String.lowercase_ascii |> String.split_on_char ' '
+    |> List.filter (fun s -> s <> "")
+  with
+  | [ col_letter; row_one ] -> begin
+      try
+        update
+          (int_of_string row_one - 1) (*could fail with Failure*)
+          (List.assoc col_letter letters_to_ints) (*could fail with Not_found*)
+          game
+      with Not_found | Failure _ ->
+        raise (Invalid_argument "Could not parse input")
+    end
+  | _ -> raise (Invalid_argument "Could not parse input")
+
 let rec initialize (msg : string) =
   print_endline msg;
   print_string "> ";
@@ -132,7 +172,58 @@ let rec initialize (msg : string) =
   | [ "h" ] -> initialize init_help_commands
   | _ -> initialize invalid_msg
 
+and history_show (msg : string) (game : game) (gamemode : gamemode)
+    (human_player : Board.piece) (print_games : bool) =
+  if print_games then print_previous_games game else ();
+  print_endline msg;
+  print_string "> ";
+  let resp = read_line () |> String.trim |> String.lowercase_ascii in
+  match resp with
+  | "exit" -> (
+      match gamemode with
+      | Multi -> multi ("Welcome back! " ^ default_main_msg) game
+      | Single d ->
+          single ("Welcome back! " ^ default_main_msg) d game human_player)
+  | "q" -> print_endline "Goodbye!"
+  | "h" -> history_show history_help_msg_b game gamemode human_player false
+  | s -> begin
+      match is_string_int s with
+      | true, i -> (
+          try
+            let reverted_game = revert game i in
+            print_endline ("Reverting game to MOVE NUMBER: " ^ string_of_int i);
+            match gamemode with
+            | Multi -> multi ("Welcome back! " ^ default_main_msg) reverted_game
+            | Single d ->
+                single
+                  ("Welcome back! " ^ default_main_msg)
+                  d reverted_game human_player
+          with Failure f ->
+            history_show
+              (invalid_msg ^ "\nERROR: " ^ f)
+              game gamemode human_player false)
+      | false, _ -> history_show invalid_msg game gamemode human_player false
+    end
+
+and history (msg : string) (game : game) (gamemode : gamemode)
+    (human_player : Board.piece) =
+  print_newline ();
+  print_endline msg;
+  print_string "> ";
+  let resp = read_line () |> String.trim |> String.lowercase_ascii in
+  match resp with
+  | "show" -> history_show history_show_msg game gamemode human_player true
+  | "exit" -> (
+      match gamemode with
+      | Multi -> multi ("Welcome back! " ^ default_main_msg) game
+      | Single d ->
+          single ("Welcome back! " ^ default_main_msg) d game human_player)
+  | "q" -> print_endline "Goodbye!"
+  | "h" -> history history_help_msg_a game gamemode human_player
+  | _ -> history invalid_msg game gamemode human_player
+
 and multi (msg : string) (game : game) =
+  print_newline ();
   print_current_game game;
   print_endline msg;
   print_endline
@@ -145,6 +236,7 @@ and multi (msg : string) (game : game) =
   match resp with
   | "h" -> multi game_commands game
   | "q" -> print_endline "Goodbye!"
+  | "history" -> history history_welcome_msg game Multi Black
   | _ -> begin
       try
         if Board.is_board_filled (board_of_game game) then play (End game)
@@ -158,8 +250,9 @@ and multi (msg : string) (game : game) =
 
 (* Computer player logic called by main *)
 and single (msg : string) (mode : difficulty) (game : game)
-    (is_human_player : bool) =
+    (human_player : Board.piece) =
   (* print the current game state *)
+  print_endline "";
   print_current_game game;
   (* check who is playing the game *)
   let generate_move =
@@ -175,7 +268,7 @@ and single (msg : string) (mode : difficulty) (game : game)
     | White -> Board.Black
     | Empty -> failwith "Something weird is happening"
   in
-  if is_human_player then begin
+  if otherPlayer != human_player then begin
     print_endline msg;
     let valid_moves_list =
       Board.find_all_valid_moves (player_of_game game) (board_of_game game)
@@ -187,7 +280,7 @@ and single (msg : string) (mode : difficulty) (game : game)
     | 0, 0 -> play (End game)
     | _, 0 ->
         single "No more valid moves! Skipping your turn..." mode
-          (skip_turn game) (not is_human_player)
+          (skip_turn game) human_player
     | _, _ -> (
         print_endline
           ("VALID MOVES: "
@@ -198,7 +291,7 @@ and single (msg : string) (mode : difficulty) (game : game)
         print_string "> ";
         let resp = read_line () |> String.trim |> String.lowercase_ascii in
         match resp with
-        | "h" -> single game_commands mode game is_human_player
+        | "h" -> single game_commands mode game human_player
         | "q" -> print_string "Goodbye!"
         | _ -> (
             try
@@ -206,11 +299,10 @@ and single (msg : string) (mode : difficulty) (game : game)
               print_endline (List.nth computerResponseList pos);
               if Board.is_board_filled (board_of_game game) then play (End game)
               else
-                single default_main_msg mode (eval_move resp game)
-                  (not is_human_player)
+                single default_main_msg mode (eval_move resp game) human_player
             with
             | Invalid_argument e ->
-                single (invalid_msg ^ "\nERROR: " ^ e) mode game is_human_player
+                single (invalid_msg ^ "\nERROR: " ^ e) mode game human_player
             | End_game -> play (End game)))
   end
   else begin
@@ -224,7 +316,7 @@ and single (msg : string) (mode : difficulty) (game : game)
     | 0, 0 -> play (End game)
     | _, 0 ->
         single "No more valid moves! Skipping your turn..." mode
-          (skip_turn game) is_human_player
+          (skip_turn game) human_player
     | _, _ -> (
         let move =
           generate_move
@@ -238,9 +330,11 @@ and single (msg : string) (mode : difficulty) (game : game)
             ^ string_of_int (fst move)
             ^ " "
             ^ string_of_int (snd move));
+          print_endline
+            "*-----------------------------------------------------*";
           single default_main_msg mode
             (update (snd move) (fst move) game)
-            (not is_human_player)
+            human_player
         with End_game -> play (End game))
   end
 
@@ -254,15 +348,13 @@ and end_game (game : game) =
     else if black_score = white_score then "Tie!"
     else "White"
   in
+  print_endline closing_top;
   print_endline
-    "\u{2554}\u{2550}.\u{2735}.\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2557}";
-  print_endline
-    ("      Game over!\n   Black score: " ^ string_of_int black_score
+    ("     Game over!\n   Black score: " ^ string_of_int black_score
    ^ "\n   White score: " ^ string_of_int white_score ^ "\n   WINNER: " ^ winner
     );
   print_endline "      Goodbye!";
-  print_endline
-    "\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}.\u{2735}.\u{2550}\u{255D}"
+  print_endline closing_bottom
 
 and play (state : state) =
   match state with
@@ -275,8 +367,8 @@ and play (state : state) =
           print_string "> ";
           let resp = read_line () |> String.trim |> String.lowercase_ascii in
           match resp with
-          | "b" -> single default_main_msg difficulty game true
-          | "w" -> single default_main_msg difficulty game false
+          | "b" -> single default_main_msg difficulty game Black
+          | "w" -> single default_main_msg difficulty game White
           | _ ->
               print_endline "Please choose a valid color!";
               play (Main (Single difficulty, game))))
