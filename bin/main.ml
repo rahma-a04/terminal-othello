@@ -93,21 +93,21 @@ let game_commands =
   \  To enter a move, please type 'column row' (i.e. F 6)\n\n\
   \  'h': displays commands\n\n\
   \  'q': quits game\n\n\
-  \  'hist': enters history mode"
+  \  'history': enters history mode"
 
-let default_main_msg = "Enter move (e.g. F 5)"
+let default_main_msg = "Enter move (e.g. F 5). Type 'h' for valid commands."
 let single_choose_color = "Choose 'b' to play as Black, 'w' to play as White"
 
 let history_welcome_msg =
-  "Welcome to history mode! To view all past moves in this game, type 'show'. \
-   You may select a move number to return to that state in the game, or type \
-   'exit' to return to the current state of the game."
+  "Welcome to history mode! To view all past moves in this game and select a \
+   move to return to, type 'show'. Type 'exit' to return to the current state \
+   of the game."
 
 let history_selector_msg = "Type a move number to return to (e.g. '2')."
 
 let history_help_msg_a =
   "COMMANDS:\n\n\n\
-  \  'show': shows current game's history and allows you to select a state to \
+  \ 'show': shows current game's history and allows you to select a state to \
    return to\n\n\
   \ 'exit': exits history mode\n\n\
   \ 'h': displays commands\n\n\
@@ -115,9 +115,9 @@ let history_help_msg_a =
 
 let history_help_msg_b =
   "COMMANDS:\n\n\n\
-  \  Type the move # of a point in the printed history to return to that point \
+  \ Type the move # of a point in the printed history to return to that point \
    in the game!\n\
-  \ (e.g. '2' will take you back to [MOVE NUMBER: 2])\n\
+  \ (e.g. '2' will take you back to [MOVE NUMBER: 2])\n\n\
   \ 'exit': exits history mode\n\n\
   \ 'h': displays commands\n\n\
   \ 'q': quits othello"
@@ -125,9 +125,10 @@ let history_help_msg_b =
 let history_show_msg =
   "Please select a move number in your current game to return to (e.g. '2').\n\
   \  \n\
-   WARNING: Once selected, you will not be able to restore any progress after \
-   that point! \nType 'h' for help, 'exit' to return to your current game, and \
-   'q' to quit Othello."
+  \   WARNING: Once selected, you will not be able to restore any progress \
+   after that point! \n\
+   Type 'h' for help, 'exit' to return to your current game, and 'q' to quit \
+   Othello."
 
 let closing_top =
   "\u{2554}\u{2550}.\u{2735}.\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2557}"
@@ -174,7 +175,10 @@ let rec initialize (msg : string) =
 
 and history_show (msg : string) (game : game) (gamemode : gamemode)
     (human_player : Board.piece) (print_games : bool) =
-  if print_games then print_previous_games game else ();
+  if print_games then (
+    print_previous_games game;
+    print_endline "GAME HISTORY ABOVE")
+  else ();
   print_endline msg;
   print_string "> ";
   let resp = read_line () |> String.trim |> String.lowercase_ascii in
@@ -293,6 +297,8 @@ and single (msg : string) (mode : difficulty) (game : game)
         match resp with
         | "h" -> single game_commands mode game human_player
         | "q" -> print_string "Goodbye!"
+        | "history" ->
+            history history_welcome_msg game (Single mode) human_player
         | _ -> (
             try
               let pos = Random.int (List.length computerResponseList) in
@@ -372,7 +378,7 @@ and play (state : state) =
           | _ ->
               print_endline "Please choose a valid color!";
               play (Main (Single difficulty, game))))
-  | History game -> failwith "U"
+  | History game -> failwith "Something went wrong"
   | End game -> end_game game
 
 (* parse input for move multiplayer: check if move is valid -> if yes, place
