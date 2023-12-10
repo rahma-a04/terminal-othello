@@ -340,7 +340,10 @@ and single (msg : string) (mode : difficulty) (game : game)
         | _ -> (
             try
               let pos = Random.int (List.length computer_response_list) in
-              print_endline (List.nth computer_response_list pos);
+              print_endline
+                ("Computer: "
+                ^ List.nth computer_response_list pos
+                ^ " \nHere is my move...");
               if Board.is_board_filled (board_of_game game) then play (End game)
               else
                 single default_main_msg mode (eval_move resp game) human_player
