@@ -1,3 +1,6 @@
+(** The computer player of the game with four possible levels: easy, medium,
+    hard, and god mode. *)
+
 val generateMoveHelper : (int * int) list -> int -> int -> int * int
 (** Randomly selects possible move from all possible moves *)
 
