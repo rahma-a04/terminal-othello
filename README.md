@@ -15,6 +15,8 @@ Refer to INSTALL.txt for installation instructions
 
 ## Gameplay
 
+Refer to this page for the rules of Othello: https://www.worldothello.org/about/about-othello/othello-rules/official-rules/english
+
 1.  Type command "make othello" to start the othello game
 
 2.  Next, type 's difficulty', with difficulty being easy, medium, hard, or godmode,
